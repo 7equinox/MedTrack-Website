@@ -20,6 +20,17 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     if ($result && $result->num_rows > 0) {
         $_SESSION["PatientID"] = $patientID;
+
+        if (!empty($_POST["remember"])) {
+            // Set cookie for 30 days
+            setcookie("remember_patient_id", $patientID, time() + (86400 * 30), "/");
+        } else {
+            // Unset cookie
+            if (isset($_COOKIE['remember_patient_id'])) {
+                setcookie("remember_patient_id", "", time() - 3600, "/");
+            }
+        }
+
         header("Location: ./patient/dashboard.php");
         exit();
     } else {
@@ -64,11 +75,11 @@ require_once '../templates/partials/header.php';
         <form method="POST" action="">
           <div class="form-group">
             <label for="patient-id">Patient ID</label>
-            <input type="text" id="patient-id" name="patient-id" required />
+            <input type="text" id="patient-id" name="patient-id" required value="<?php echo htmlspecialchars($_POST['patient-id'] ?? $_COOKIE['remember_patient_id'] ?? ''); ?>" />
           </div>
 
           <div class="checkbox-group">
-            <input type="checkbox" id="remember" name="remember" />
+            <input type="checkbox" id="remember" name="remember" <?php echo isset($_POST['remember']) || ($_SERVER['REQUEST_METHOD'] !== 'POST' && isset($_COOKIE['remember_patient_id'])) ? 'checked' : ''; ?>/>
             <label for="remember">Remember Me</label>
           </div>
 

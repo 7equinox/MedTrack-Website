@@ -17,6 +17,21 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if ($staff && $password === $staff['Password']) {
         $_SESSION['StaffID'] = $staff['StaffID'];
         $_SESSION['StaffName'] = $staff['StaffName'];
+
+        if (!empty($_POST["remember"])) {
+            // Set cookies for 30 days
+            setcookie("remember_staff_id", $staffID, time() + (86400 * 30), "/");
+            setcookie("remember_staff_password", $password, time() + (86400 * 30), "/");
+        } else {
+            // Unset cookies
+            if (isset($_COOKIE['remember_staff_id'])) {
+                setcookie("remember_staff_id", "", time() - 3600, "/");
+            }
+            if (isset($_COOKIE['remember_staff_password'])) {
+                setcookie("remember_staff_password", "", time() - 3600, "/");
+            }
+        }
+
         header("Location: staff/dashboard.php");
         exit();
     } else {
@@ -53,13 +68,13 @@ require_once '../templates/partials/header.php';
         <form method="POST" action="">
           <div class="form-group">
             <label for="staff-id">Staff ID</label>
-            <input type="text" name="staff_id" id="staff-id" required />
+            <input type="text" name="staff_id" id="staff-id" required value="<?php echo htmlspecialchars($_POST['staff_id'] ?? $_COOKIE['remember_staff_id'] ?? ''); ?>" />
           </div>
 
           <div class="form-group">
             <label for="password">Password</label>
             <div class="password-field">
-              <input type="password" name="password" id="password" required />
+              <input type="password" name="password" id="password" required value="<?php echo htmlspecialchars($_POST['password'] ?? $_COOKIE['remember_staff_password'] ?? ''); ?>" />
               <span class="toggle-icon"></span>
             </div>
           </div>
@@ -69,7 +84,7 @@ require_once '../templates/partials/header.php';
           </div>
 
           <div class="checkbox-group">
-            <input type="checkbox" id="remember" />
+            <input type="checkbox" id="remember" name="remember" <?php echo isset($_POST['remember']) || ($_SERVER['REQUEST_METHOD'] !== 'POST' && isset($_COOKIE['remember_staff_id'])) ? 'checked' : ''; ?> />
             <label for="remember">Remember Me</label>
           </div>
 
