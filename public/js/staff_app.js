@@ -583,4 +583,44 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     }
+
+    // 5. Staff Dashboard: Real-time search for medication table
+    const dashboardSearchInput = document.getElementById('dashboard-search-input');
+    if (dashboardSearchInput) {
+        const patientListBody = document.getElementById('patient-list-body');
+
+        dashboardSearchInput.addEventListener('input', function() {
+            const searchTerm = this.value.toLowerCase();
+            const rows = patientListBody.getElementsByTagName('tr');
+
+            for (const row of rows) {
+                // Ensure we don't hide form rows if they exist
+                if (row.classList.contains('new-med-row')) continue;
+
+                const rowText = row.textContent.toLowerCase();
+                if (rowText.includes(searchTerm)) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            }
+        });
+    }
+
+    // 6. Add Medication Form Toggle
+    const toggleButton = document.getElementById('toggle-med-form');
+    const medForm = document.getElementById('medication-form');
+    const cancelButton = document.getElementById('cancel-med-form');
+
+    if (toggleButton && medForm && cancelButton) {
+        toggleButton.addEventListener('click', function() {
+            medForm.classList.remove('hidden');
+            this.classList.add('hidden');
+        });
+
+        cancelButton.addEventListener('click', function() {
+            medForm.classList.add('hidden');
+            toggleButton.classList.remove('hidden');
+        });
+    }
 }); 

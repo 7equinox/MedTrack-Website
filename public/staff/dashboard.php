@@ -129,7 +129,7 @@ while ($missed = $missedQuery->fetch_assoc()) {
         </section>
         <div class="patient-list-container">
             <div class="search-bar" style="margin-bottom: 1.5rem;">
-                <input type="text" placeholder="Search...">
+                <input id="dashboard-search-input" type="text" placeholder="Search by patient, medication, room...">
             </div>
             <div class="table-wrapper">
                 <table>
@@ -151,7 +151,7 @@ while ($missed = $missedQuery->fetch_assoc()) {
                                     <td><?= htmlspecialchars($row['PatientName']) ?></td>
                                     <td><?= htmlspecialchars($row['MedicationName']) ?></td>
                                     <td><?= htmlspecialchars($row['Dosage']) ?></td>
-                                    <td><?= htmlspecialchars($row['IntakeTime']) ?></td>
+                                    <td><?= htmlspecialchars(date('Y-m-d h:i A', strtotime($row['IntakeTime']))) ?></td>
                                     <td><?= htmlspecialchars($row['RoomNumber']) ?></td>
                                 </tr>
                             <?php endwhile; ?>
@@ -164,30 +164,44 @@ while ($missed = $missedQuery->fetch_assoc()) {
                 </table>
             </div>
 
-            <button id="toggle-med-form" style="margin-top:2rem; background-color:#2c3e50; color:white; padding:10px 20px; border:none; border-radius:5px; cursor:pointer;" class="btn">Add Medication</button>
-            <form method="POST" id="medication-form" style="display:none; margin-top: 1rem; background:#f9f9f9; padding: 1rem; border-radius: 8px;">
-                <div style="margin-bottom: 0.75rem;">
-                    <label>Patient ID:</label><br>
-                    <select name="patient_id" required style="width: 100%; padding: 0.5rem;">
-                        <?php while ($p = $patients->fetch_assoc()): ?>
-                            <option value="<?= htmlspecialchars($p['PatientID']) ?>">[<?= htmlspecialchars($p['PatientID']) ?>] <?= htmlspecialchars($p['PatientName']) ?></option>
-                        <?php endwhile; ?>
-                    </select>
+            <button id="toggle-med-form" class="btn btn-add-med-toggle">Add Medication</button>
+
+            <form method="POST" id="medication-form" class="add-med-form hidden">
+                <h3 class="form-title">Add New Medication Schedule</h3>
+                <div class="form-grid">
+                    <div class="form-group col-span-2">
+                        <label for="patient-id-select">Patient ID</label>
+                        <select name="patient_id" id="patient-id-select" required>
+                            <option value="" disabled selected>Select a Patient</option>
+                            <?php
+                            // We need to reset the mysql result pointer to loop through patients again
+                            if (isset($patients) && $patients->num_rows > 0) {
+                                mysqli_data_seek($patients, 0);
+                                while ($p = $patients->fetch_assoc()): ?>
+                                    <option value="<?= htmlspecialchars($p['PatientID']) ?>">[<?= htmlspecialchars($p['PatientID']) ?>] <?= htmlspecialchars($p['PatientName']) ?></option>
+                            <?php endwhile; } ?>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="medication-name">Medication Name</label>
+                        <input type="text" name="medication_name" id="medication-name" required />
+                    </div>
+
+                    <div class="form-group">
+                        <label for="dosage">Dosage</label>
+                        <input type="text" name="dosage" id="dosage" required />
+                    </div>
+
+                    <div class="form-group col-span-2">
+                        <label for="intake-time">Intake Time</label>
+                        <input type="datetime-local" name="intake_time" id="intake-time" required step="60" />
+                    </div>
                 </div>
-                <div style="margin-bottom: 0.75rem;">
-                    <label>Medication Name:</label><br>
-                    <input type="text" name="medication_name" required style="width: 100%; padding: 0.5rem;" />
-                </div>
-                <div style="margin-bottom: 0.75rem;">
-                    <label>Dosage:</label><br>
-                    <input type="text" name="dosage" required style="width: 100%; padding: 0.5rem;" />
-                </div>
-                <div style="margin-bottom: 0.75rem;">
-                    <label>Intake Time:</label><br>
-                    <input type="datetime-local" name="intake_time" required style="width: 100%; padding: 0.5rem;" />
-                </div>
-                <div>
-                    <button type="submit" name="add_medication" class="btn" style="background-color:#2c3e50; color:white; padding:10px 20px; border:none; border-radius:5px;">Save</button>
+
+                <div class="form-actions">
+                    <button type="button" id="cancel-med-form" class="btn btn-cancel">Cancel</button>
+                    <button type="submit" name="add_medication" class="btn btn-save">Save</button>
                 </div>
             </form>
         </div>
@@ -210,13 +224,6 @@ while ($missed = $missedQuery->fetch_assoc()) {
     </div>
 </section>
 </main>
-
-<script>
-document.getElementById('toggle-med-form').addEventListener('click', function() {
-    const form = document.getElementById('medication-form');
-    form.style.display = form.style.display === 'none' ? 'block' : 'none';
-});
-</script>
 
 <?php
 require_once __DIR__ . '/../../templates/partials/staff_side_menu.php';
