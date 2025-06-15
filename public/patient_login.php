@@ -1,8 +1,10 @@
 <?php
 session_start();
 
+// Use the central database connection
+require_once '../config/database.php';
+
 // Connect to database
-$conn = new mysqli("localhost", "root", "", "medtrackdb");
 if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
@@ -39,7 +41,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     $stmt->close();
 }
-$conn->close();
 ?>
 
 <?php
