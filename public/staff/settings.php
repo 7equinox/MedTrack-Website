@@ -24,7 +24,7 @@ $staff = $result->fetch_assoc();
 
 // Default values
 $staffName = $staff['StaffName'] ?? 'Unknown Staff';
-$staffPic = !empty($staff['ProfilePicture']) ? $base_path . '/' . $staff['ProfilePicture'] : 'https://images.pexels.com/photos/415829/pexels-photo-415829.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1';
+$staffPic = !empty($staff['ProfilePicture']) ? $base_path . '/' . $staff['ProfilePicture'] : $base_path . '/public/images/default-prof-staff.png';
 
 require_once __DIR__ . '/../../templates/partials/staff_header.php';
 ?>

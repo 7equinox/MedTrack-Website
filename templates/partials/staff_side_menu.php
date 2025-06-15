@@ -18,10 +18,10 @@ $result = $stmt->get_result();
 if ($result && $result->num_rows > 0) {
     $staff = $result->fetch_assoc();
     $staffName = htmlspecialchars($staff['StaffName']);
-    $staffPic = !empty($staff['ProfilePicture']) ? $base_path . '/' . $staff['ProfilePicture'] : $base_path . '/images/default-profile.png';
+    $staffPic = !empty($staff['ProfilePicture']) ? $base_path . '/' . $staff['ProfilePicture'] : $base_path . '/public/images/default-prof-staff.png';
 } else {
     $staffName = "Unknown Staff";
-    $staffPic = $base_path . '/images/default-profile.png';
+    $staffPic = $base_path . '/public/images/default-prof-staff.png';
 }
 ?>
 

@@ -1,7 +1,9 @@
 <?php
+session_start();
 $pageTitle = 'Terms & Conditions - MedTrack';
 $activePage = 'terms';
 $base_path = '../';
+require_once '../../config/database.php';
 require_once '../../templates/partials/header.php';
 ?>
 

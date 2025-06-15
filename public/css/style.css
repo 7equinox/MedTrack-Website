@@ -572,22 +572,62 @@ input[type="password"] {
   flex-direction: row;
   align-items: center;
   justify-content: center;
-  gap: 0.8rem;
+  gap: 1rem;
   margin-bottom: 3rem;
   transition: color 0.3s ease;
 }
 
+.page-patient-area .profile-pic-wrapper {
+  width: 75px;
+  height: 75px;
+  border-radius: 50%;
+  border: 3px solid white;
+  padding: 3px;
+  box-sizing: border-box;
+  flex-shrink: 0;
+  transition: border-color 0.3s ease;
+}
+
 .page-patient-area .profile-pic {
-  width: 80px;
-  height: 80px;
+  width: 100%;
+  height: 100%;
   border-radius: 50%;
   object-fit: cover;
-  border: 3px solid white;
+  border: none;
 }
 
 .page-patient-area .profile-label {
-  font-size: 1.2rem;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  text-align: left;
+}
+
+.page-patient-area .profile-name {
+  font-size: 1.15rem;
   font-weight: 600;
+  color: white;
+  line-height: 1.3;
+  transition: color 0.3s ease;
+}
+
+.page-patient-area .profile-id {
+    font-size: 0.9rem;
+    color: #d1eaff;
+    font-weight: 400;
+    transition: color 0.3s ease;
+}
+
+.page-patient-area .profile-header:hover .profile-name,
+.page-patient-area .profile-header.active .profile-name,
+.page-patient-area .profile-header:hover .profile-id,
+.page-patient-area .profile-header.active .profile-id {
+    color: #3498db;
+}
+
+.page-patient-area .profile-header:hover .profile-pic-wrapper,
+.page-patient-area .profile-header.active .profile-pic-wrapper {
+    border-color: #3498db;
 }
 
 .page-patient-area .side-menu-links {
@@ -654,6 +694,28 @@ input[type="password"] {
 }
 
 /* Page: Patient Dashboard */
+@keyframes slideDownFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-30px) translateX(-50%);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) translateX(-50%);
+  }
+}
+
+@keyframes slideUpFadeOut {
+  from {
+    opacity: 1;
+    transform: translateY(0) translateX(-50%);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(-30px) translateX(-50%);
+  }
+}
+
 .page-patient-dashboard .reminder-popup {
   position: fixed;
   top: 90px; /* Adjust based on header height */
@@ -671,6 +733,11 @@ input[type="password"] {
   font-weight: 500;
   text-align: center;
   font-size: 1.1rem;
+  animation: slideDownFadeIn 0.5s ease-out forwards;
+}
+
+.page-patient-dashboard .reminder-popup.closing {
+  animation: slideUpFadeOut 0.5s ease-out forwards;
 }
 
 .page-patient-dashboard .close-btn {

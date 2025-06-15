@@ -32,7 +32,6 @@ while ($row = $result->fetch_assoc()) {
 }
 
 $medStmt->close();
-$conn->close();
 ?>
 
 <body class="page-patient-area page-patient-med-history">

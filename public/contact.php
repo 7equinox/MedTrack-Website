@@ -1,7 +1,9 @@
 <?php
+session_start();
 $pageTitle = 'Contact Us - MedTrack';
 $activePage = 'contact';
 $base_path = './';
+require_once '../config/database.php';
 require_once '../templates/partials/header.php';
 ?>
 

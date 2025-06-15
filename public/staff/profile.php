@@ -61,7 +61,7 @@ if ($result && $result->num_rows > 0) {
 }
 
 // Profile picture path
-$profilePicPath = !empty($staff['ProfilePicture']) ? $base_path . '/' . $staff['ProfilePicture'] : $base_path . '/images/default-profile.png';
+$profilePicPath = !empty($staff['ProfilePicture']) ? $base_path . '/' . $staff['ProfilePicture'] : $base_path . '/public/images/default-prof-staff.png';
 
 require_once __DIR__ . '/../../templates/partials/staff_header.php';
 ?>

@@ -22,7 +22,7 @@ $patientStmt->execute();
 $patient = $patientStmt->get_result()->fetch_assoc();
 
 // Get all medication schedules
-$medStmt = $conn->prepare("SELECT * FROM medicationschedule WHERE PatientID = ?");
+$medStmt = $conn->prepare("SELECT * FROM medicationschedule WHERE PatientID = ? ORDER BY IntakeTime ASC");
 $medStmt->bind_param("s", $patientID);
 $medStmt->execute();
 $allMedications = $medStmt->get_result();
@@ -40,7 +40,6 @@ while ($row = $allMedications->fetch_assoc()) {
     }
 }
 
-$conn->close();
 ?>
 <?php
 $pageTitle = 'Patient Dashboard - MedTrack';
@@ -56,7 +55,7 @@ require_once '../../templates/partials/header.php';
   <!-- Reminder Popup -->
   <?php if ($firstReminder): ?>
     <div class="reminder-popup" id="reminderPopup">
-      <p>Reminder: <?= htmlspecialchars($firstReminder['MedicationName']) ?> at <?= htmlspecialchars($firstReminder['IntakeTime']) ?></p>
+      <p>Reminder: <?= htmlspecialchars($firstReminder['MedicationName']) ?> at <?= htmlspecialchars(date('Y-m-d h:i A', strtotime($firstReminder['IntakeTime']))) ?></p>
       <span class="close-btn" id="closePopup">✖</span>
     </div>
   <?php endif; ?>
@@ -83,7 +82,7 @@ require_once '../../templates/partials/header.php';
               <tr>
                 <td><?= htmlspecialchars($med['MedicationName']) ?></td>
                 <td><?= htmlspecialchars($med['Dosage']) ?></td>
-                <td><?= htmlspecialchars($med['IntakeTime']) ?></td>
+                <td><?= htmlspecialchars(date('Y-m-d h:i A', strtotime($med['IntakeTime']))) ?></td>
                 <td><?= htmlspecialchars($med['Status']) ?></td>
               </tr>
             <?php endforeach; ?>

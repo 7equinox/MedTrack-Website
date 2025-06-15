@@ -8,7 +8,10 @@ document.addEventListener('DOMContentLoaded', function() {
 
     if (closePopup && reminderPopup) {
         closePopup.addEventListener('click', function() {
-            reminderPopup.style.display = 'none';
+            reminderPopup.classList.add('closing');
+            reminderPopup.addEventListener('animationend', function() {
+                reminderPopup.style.display = 'none';
+            }, { once: true });
         });
     }
 
