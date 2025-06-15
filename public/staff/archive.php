@@ -6,7 +6,7 @@ if (!isset($_SESSION['StaffID'])) {
 }
 
 $page_title = 'Archived Patients';
-$body_class = 'page-staff-archived';
+$body_class = 'page-staff-archive';
 $base_path = '../..';
 $activePage = 'patient_list';
 
@@ -22,7 +22,10 @@ $result = $conn->query($sql);
 ?>
 
 <main>
-  <h1 class="page-title">Archived Patients</h1>
+  <div class="archive-header">
+    <h1 class="archive-title">Archived Patients</h1>
+    <a href="patient_list.php" class="btn back-btn">← Back to Patient List</a>
+  </div>
 
   <div class="list-container">
     <div class="search-bar">
@@ -35,7 +38,7 @@ $result = $conn->query($sql);
             <th>Patient ID</th>
             <th>Patient Name</th>
             <th>Room No.</th>
-            <th>Actions</th>
+            <th style="width: 150px;">Actions</th>
           </tr>
         </thead>
         <tbody>
@@ -53,7 +56,7 @@ $result = $conn->query($sql);
               </tr>
             <?php endwhile; ?>
           <?php else: ?>
-            <tr><td colspan="4" class="text-center">No archived patients found.</td></tr>
+            <tr><td colspan="4" style="text-align: center;">No archived patients found.</td></tr>
           <?php endif; ?>
         </tbody>
       </table>
@@ -81,7 +84,7 @@ function restorePatient(pid) {
       if (res.ok) {
         location.reload();
       } else {
-        return res.text().then(txt => { throw new Error(txt) });
+        return res.text().then(txt => { throw new Error(txt || 'Unknown error occurred.') });
       }
     })
     .catch(err => alert('Error restoring patient: ' + err.message));

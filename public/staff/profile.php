@@ -42,7 +42,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_profile'])) {
     $updateInfoStmt->bind_param("ssss", $name, $email, $contact, $staffID);
     $updateInfoStmt->execute();
 
-    header("Location: profile.php");
+    $_SESSION['StaffName'] = $name; // Update session with new name
+    header("Location: profile.php?update_success=1");
     exit();
 }
 
@@ -68,6 +69,18 @@ require_once __DIR__ . '/../../templates/partials/staff_header.php';
 
 <main>
     <h1 class="profile-title">Profile</h1>
+
+    <?php if (isset($_GET['update_success'])): ?>
+        <div class="alert success" id="success-panel">
+            Profile has been successfully updated.
+        </div>
+    <?php endif; ?>
+    <?php if (isset($error_message)): ?>
+        <div class="alert error" style="background-color: #f8d7da; color: #721c24; padding: 1rem; border: 1px solid #f5c6cb; border-radius: 8px;">
+            <?= $error_message ?>
+        </div>
+    <?php endif; ?>
+
     <div class="profile-layout">
         <div class="profile-sidebar">
             <img src="<?= htmlspecialchars($profilePicPath) ?>" alt="Profile Picture" class="profile-pic">
@@ -111,7 +124,8 @@ require_once __DIR__ . '/../../templates/partials/staff_header.php';
                 </div>
 
                 <div class="form-actions col-span-3">
-                    <button type="submit" class="save-btn">Save</button>
+                    <button type="button" id="cancel-btn" class="btn btn-cancel" disabled>Cancel</button>
+                    <button type="submit" id="save-btn" class="btn btn-save">Save</button>
                 </div>
             </div>
         </form>
@@ -132,6 +146,58 @@ document.querySelectorAll('.edit-icon').forEach(icon => {
             input.removeAttribute('readonly');
             input.focus();
         }
+    });
+});
+
+document.addEventListener('DOMContentLoaded', function () {
+    const successPanel = document.getElementById('success-panel');
+    if (successPanel) {
+        setTimeout(() => {
+            successPanel.style.transition = 'opacity 0.5s ease';
+            successPanel.style.opacity = '0';
+            setTimeout(() => successPanel.style.display = 'none', 500);
+        }, 3000);
+    }
+
+    const form = document.querySelector('.profile-form-card');
+    const inputs = form.querySelectorAll('input[name]');
+    const cancelBtn = document.getElementById('cancel-btn');
+
+    // Store original values
+    inputs.forEach(input => {
+        input.dataset.originalValue = input.value;
+    });
+
+    function checkForChanges() {
+        let hasChanged = false;
+        inputs.forEach(input => {
+            if (input.value !== input.dataset.originalValue) {
+                hasChanged = true;
+            }
+        });
+        cancelBtn.disabled = !hasChanged;
+    }
+
+    inputs.forEach(input => {
+        input.addEventListener('input', checkForChanges);
+    });
+
+    cancelBtn.addEventListener('click', function() {
+        inputs.forEach(input => {
+            input.value = input.dataset.originalValue;
+        });
+        this.disabled = true;
+    });
+
+    form.addEventListener('submit', function() {
+        // After submit, disable cancel button
+        setTimeout(() => {
+            cancelBtn.disabled = true;
+            // Update original values to new saved values
+            inputs.forEach(input => {
+                input.dataset.originalValue = input.value;
+            });
+        }, 100);
     });
 });
 </script>
