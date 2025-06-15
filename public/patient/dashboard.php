@@ -67,31 +67,32 @@ require_once '../../templates/partials/header.php';
       <a href="med_history.php" class="history-btn" id="viewHistory">View History</a>
     </div>
 
-    <table class="medication-table">
-      <thead>
-        <tr>
-          <th>Medication</th>
-          <th>Dosage</th>
-          <th>Intake Time</th>
-          <th>Status</th>
-        </tr>
-      </thead>
-<tbody>
-  <?php if (count($upcomingMeds) > 0): ?>
-    <?php foreach ($upcomingMeds as $med): ?>
-      <tr>
-        <td><?= htmlspecialchars($med['MedicationName']) ?></td>
-        <td><?= htmlspecialchars($med['Dosage']) ?></td>
-        <td><?= htmlspecialchars($med['IntakeTime']) ?></td>
-        <td><?= htmlspecialchars($med['Status']) ?></td>
-      </tr>
-    <?php endforeach; ?>
-  <?php else: ?>
-    <tr><td colspan="4" class="text-center">No upcoming medications.</td></tr>
-  <?php endif; ?>
-</tbody>
-
-    </table>
+    <div class="table-wrapper">
+      <table class="medication-table">
+        <thead>
+          <tr>
+            <th>Medication</th>
+            <th>Dosage</th>
+            <th>Intake Time</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          <?php if (count($upcomingMeds) > 0): ?>
+            <?php foreach ($upcomingMeds as $med): ?>
+              <tr>
+                <td><?= htmlspecialchars($med['MedicationName']) ?></td>
+                <td><?= htmlspecialchars($med['Dosage']) ?></td>
+                <td><?= htmlspecialchars($med['IntakeTime']) ?></td>
+                <td><?= htmlspecialchars($med['Status']) ?></td>
+              </tr>
+            <?php endforeach; ?>
+          <?php else: ?>
+            <tr><td colspan="4" class="text-center">No upcoming medications.</td></tr>
+          <?php endif; ?>
+        </tbody>
+      </table>
+    </div>
   </main>
 
 <?php require_once '../../templates/partials/footer.php'; ?> 

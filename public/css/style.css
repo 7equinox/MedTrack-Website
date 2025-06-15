@@ -711,10 +711,15 @@ input[type="password"] {
   background-color: #005b8a;
 }
 
+.page-patient-dashboard .table-wrapper {
+  overflow-x: auto;
+  border-radius: 8px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+}
+
 .page-patient-dashboard .medication-table {
   width: 100%;
   border-collapse: collapse;
-  box-shadow: 0 4px 15px rgba(0,0,0,0.08);
 }
 
 .page-patient-dashboard .medication-table th,
@@ -964,7 +969,7 @@ input[type="password"] {
 
 .page-patient-profile .form-group label {
   font-size: 0.9rem;
-  font-weight: 500;
+  font-weight: bold;
   color: #333;
   margin-bottom: 0.5rem;
 }
@@ -984,6 +989,22 @@ input[type="password"] {
   -webkit-appearance: none;
   -moz-appearance: none;
   appearance: none;
+}
+
+.page-patient-profile .readonly-input {
+  padding: 0.8rem 1rem;
+  border-radius: 8px;
+  font-size: 1.05rem;
+  color: #34495e;
+  font-family: 'Poppins', sans-serif;
+  font-weight: 400;
+  background-color: #ffffff;
+  white-space: nowrap;
+  overflow-x: auto;
+  min-height: 2.25rem;
+  border: 1px solid #dde2e7;
+  box-sizing: border-box;
+  line-height: 1.5;
 }
 
 /* Page: Patient Terms - Note: Shares some styles with .page-terms */

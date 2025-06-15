@@ -55,7 +55,7 @@ if (!empty($patient['Birthdate'])) {
 }
 
 // Profile picture path
-$profilePicPath = !empty($patient['ProfilePicture']) ? $base_path . $patient['ProfilePicture'] : $base_path . 'images/default-profile.png';
+$profilePicPath = !empty($patient['ProfilePicture']) ? $base_path . $patient['ProfilePicture'] : $base_path . 'images/default-prof-patient.png';
 ?>
 
 <body class="page-patient-area page-patient-profile">
@@ -84,38 +84,35 @@ $profilePicPath = !empty($patient['ProfilePicture']) ? $base_path . $patient['Pr
         <div class="form-grid">
           <div class="form-group g-col-2">
             <label for="patient-id">Patient ID</label>
-            <input type="text" id="patient-id" value="<?= htmlspecialchars($patient['PatientID']) ?>" readonly>
+            <div class="readonly-input" id="patient-id"><?= htmlspecialchars($patient['PatientID']) ?></div>
           </div>
           <div class="form-group g-col-2">
             <label for="birthdate">Birthdate</label>
-            <input type="text" id="birthdate" value="<?= htmlspecialchars($patient['Birthdate']) ?>" readonly>
+            <div class="readonly-input" id="birthdate"><?= htmlspecialchars($patient['Birthdate']) ?></div>
           </div>
           <div class="form-group g-col-2">
             <label for="age">Age</label>
-            <input type="text" id="age" value="<?= htmlspecialchars($age) ?>" readonly>
+            <div class="readonly-input" id="age"><?= htmlspecialchars($age) ?></div>
           </div>
           <div class="form-group g-col-4">
             <label for="name">Name</label>
-            <input type="text" id="name" value="<?= htmlspecialchars($patient['PatientName']) ?>" readonly>
+            <div class="readonly-input" id="name"><?= htmlspecialchars($patient['PatientName']) ?></div>
           </div>
           <div class="form-group g-col-2">
             <label for="sex">Sex</label>
-            <select id="sex" name="sex" disabled>
-              <option value="male" <?= ($patient['Sex'] === 'male') ? 'selected' : '' ?>>Male</option>
-              <option value="female" <?= ($patient['Sex'] === 'female') ? 'selected' : '' ?>>Female</option>
-            </select>
+            <div class="readonly-input" id="sex"><?= htmlspecialchars(ucfirst($patient['Sex'])) ?></div>
           </div>
           <div class="form-group g-col-6">
             <label for="home-address">Home Address</label>
-            <input type="text" id="home-address" value="<?= htmlspecialchars($patient['HomeAddress']) ?>" readonly>
+            <div class="readonly-input" id="home-address"><?= htmlspecialchars($patient['HomeAddress']) ?></div>
           </div>
           <div class="form-group g-col-6">
             <label for="email">Email</label>
-            <input type="email" id="email" value="<?= htmlspecialchars($patient['Email']) ?>" readonly>
+            <div class="readonly-input" id="email"><?= htmlspecialchars($patient['Email']) ?></div>
           </div>
           <div class="form-group g-col-3">
             <label for="contact-no">Contact No.</label>
-            <input type="tel" id="contact-no" value="<?= htmlspecialchars($patient['ContactNumber']) ?>" readonly>
+            <div class="readonly-input" id="contact-no"><?= htmlspecialchars($patient['ContactNumber']) ?></div>
           </div>
         </div>
       </div>
