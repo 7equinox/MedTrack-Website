@@ -2,7 +2,8 @@
 $page_title = 'About Us';
 $body_class = 'page-about-us';
 $base_path = '../..';
-$activePage = 'about'; 
+$activePage = 'about';
+require_once __DIR__ . '/../../config/database.php';
 require_once __DIR__ . '/../../templates/partials/staff_header.php';
 ?>
 

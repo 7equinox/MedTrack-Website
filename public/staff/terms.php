@@ -3,6 +3,7 @@ $page_title = 'Terms & Conditions';
 $body_class = 'page-patient-terms';
 $base_path = '../..';
 $activePage = 'terms';
+require_once __DIR__ . '/../../config/database.php';
 require_once __DIR__ . '/../../templates/partials/staff_header.php';
 ?>
 

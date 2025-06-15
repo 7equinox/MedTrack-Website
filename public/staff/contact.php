@@ -3,6 +3,7 @@ $page_title = 'Contact Us';
 $body_class = 'page-contact-us';
 $base_path = '../..';
 $activePage = 'contact';
+require_once __DIR__ . '/../../config/database.php';
 require_once __DIR__ . '/../../templates/partials/staff_header.php';
 ?>
 
