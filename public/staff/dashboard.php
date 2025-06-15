@@ -68,7 +68,7 @@ $completeMeds = $conn->query("SELECT COUNT(*) as count FROM medicationschedule W
 $missedMeds = $conn->query("SELECT COUNT(*) as count FROM medicationschedule WHERE Status = 'Missed'")->fetch_assoc()['count'];
 
 // Missed alerts
-$missedAlerts = $conn->query("SELECT p.PatientName, p.RoomNumber FROM medicationschedule m JOIN patients p ON m.PatientID = p.PatientID WHERE m.Status = 'Missed' AND p.IsArchived = FALSE");
+$missedAlerts = $conn->query("SELECT p.PatientName, p.RoomNumber, m.MedicationName FROM medicationschedule m JOIN patients p ON m.PatientID = p.PatientID WHERE m.Status = 'Missed' AND p.IsArchived = FALSE");
 
 $page_title = 'Staff Dashboard';
 $body_class = 'page-staff-dashboard';
@@ -78,7 +78,7 @@ require_once __DIR__ . '/../../templates/partials/staff_header.php';
 
 // Auto-generate reports for missed medications if not already logged
 $missedQuery = $conn->query("
-    SELECT m.PatientID, p.PatientName, p.RoomNumber
+    SELECT m.PatientID, p.PatientName, p.RoomNumber, m.MedicationName
     FROM medicationschedule m
     JOIN patients p ON m.PatientID = p.PatientID
     WHERE m.Status = 'Missed' AND p.IsArchived = FALSE
@@ -86,7 +86,7 @@ $missedQuery = $conn->query("
 
 while ($missed = $missedQuery->fetch_assoc()) {
     $patientID = $missed['PatientID'];
-    $details = $missed['PatientName'] . " in Room " . $missed['RoomNumber'] . " missed their scheduled medication.";
+    $details = $missed['PatientName'] . " in Room " . $missed['RoomNumber'] . " missed their scheduled medication: " . $missed['MedicationName'];
 
     // Check if this report already exists (status still Inspect)
     $checkReport = $conn->prepare("SELECT 1 FROM reports WHERE PatientID = ? AND ReportDetails = ? AND ReportStatus = 'Inspect'");
@@ -212,7 +212,7 @@ while ($missed = $missedQuery->fetch_assoc()) {
             <?php if ($missedAlerts->num_rows > 0): ?>
                 <?php while ($alert = $missedAlerts->fetch_assoc()): ?>
                     <div class="alert-item alert-danger">
-                        <div class="alert-content"><?= htmlspecialchars($alert['PatientName']) ?> missed their medication in Room <?= htmlspecialchars($alert['RoomNumber']) ?>.</div>
+                        <div class="alert-content"><?= htmlspecialchars($alert['PatientName']) ?> missed their medication (<?= htmlspecialchars($alert['MedicationName']) ?>) in Room <?= htmlspecialchars($alert['RoomNumber']) ?>.</div>
                     </div>
                 <?php endwhile; ?>
             <?php else: ?>
