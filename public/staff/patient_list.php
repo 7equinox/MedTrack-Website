@@ -22,25 +22,53 @@ $patients = $conn->query($sql);
     </div>
 
     <!-- Add Patient Form -->
-    <div id="addPatientContainer" class="hidden" style="border: 1px solid #ccc; padding: 20px; margin-bottom: 20px; background-color: #f9f9f9;">
-      <form action="add_patient.php" method="POST">
-        <div class="form-group"><label for="PatientID">Patient ID</label><input type="text" name="PatientID" placeholder="PT-000X" required></div>
-        <div class="form-group"><label for="PatientName">Patient Name</label><input type="text" name="PatientName" required></div>
-        <div class="form-group"><label for="Birthdate">Birthdate</label><input type="date" name="Birthdate" required></div>
-        <div class="form-group"><label for="Sex">Sex</label>
-          <select name="Sex" required>
-            <option value="">Select</option>
-            <option>Male</option>
-            <option>Female</option>
-            <option>Other</option>
-          </select>
-        </div>
-        <div class="form-group"><label for="HomeAddress">Home Address</label><input type="text" name="HomeAddress"></div>
-        <div class="form-group"><label for="Email">Email</label><input type="email" name="Email"></div>
-        <div class="form-group"><label for="ContactNumber">Contact Number</label><input type="text" name="ContactNumber"></div>
-        <div class="form-group"><label for="RoomNumber">Room Number</label><input type="text" name="RoomNumber"></div>
-        <div style="text-align: right;"><button type="submit" class="btn btn-edit">Save</button></div>
-      </form>
+    <div id="addPatientContainer" class="add-med-form hidden" style="margin-bottom: 20px;">
+        <h3 class="form-title">Add New Patient</h3>
+        <form action="add_patient.php" method="POST">
+            <div class="form-grid">
+                <div class="form-group">
+                    <label for="PatientID">Patient ID</label>
+                    <input type="text" id="PatientID" name="PatientID" placeholder="PT-XXXX" required>
+                </div>
+                <div class="form-group">
+                    <label for="PatientName">Patient Name</label>
+                    <input type="text" id="PatientName" name="PatientName" required>
+                </div>
+                <div class="form-group">
+                    <label for="Birthdate">Birthdate</label>
+                    <input type="date" id="Birthdate" name="Birthdate" required>
+                </div>
+                <div class="form-group">
+                    <label for="Sex">Sex</label>
+                    <select id="Sex" name="Sex" required>
+                        <option value="" disabled selected>Select</option>
+                        <option>Male</option>
+                        <option>Female</option>
+                        <option>Other</option>
+                    </select>
+                </div>
+                <div class="form-group col-span-2">
+                    <label for="HomeAddress">Home Address</label>
+                    <input type="text" id="HomeAddress" name="HomeAddress">
+                </div>
+                <div class="form-group">
+                    <label for="Email">Email</label>
+                    <input type="email" id="Email" name="Email">
+                </div>
+                <div class="form-group">
+                    <label for="ContactNumber">Contact Number</label>
+                    <input type="text" id="ContactNumber" name="ContactNumber">
+                </div>
+                <div class="form-group">
+                    <label for="RoomNumber">Room Number</label>
+                    <input type="text" id="RoomNumber" name="RoomNumber">
+                </div>
+            </div>
+            <div class="form-actions">
+                <button type="button" id="cancelAddPatient" class="btn btn-cancel">Cancel</button>
+                <button type="submit" class="btn btn-save">Save Patient</button>
+            </div>
+        </form>
     </div>
 
     <!-- Patient Table -->
@@ -81,10 +109,23 @@ $patients = $conn->query($sql);
 
 <script>
   // Toggle Add Patient Form
-  document.getElementById('toggleAddForm').addEventListener('click', function () {
-    const formContainer = document.getElementById('addPatientContainer');
-    formContainer.classList.toggle('hidden');
-  });
+  const toggleBtn = document.getElementById('toggleAddForm');
+  const formContainer = document.getElementById('addPatientContainer');
+  const cancelBtn = document.getElementById('cancelAddPatient');
+
+  if (toggleBtn && formContainer && cancelBtn) {
+    toggleBtn.addEventListener('click', function () {
+      formContainer.classList.remove('hidden');
+      toggleBtn.disabled = true;
+    });
+
+    cancelBtn.addEventListener('click', function () {
+      formContainer.classList.add('hidden');
+      toggleBtn.disabled = false;
+      // Optional: Reset form fields on cancel
+      formContainer.querySelector('form').reset();
+    });
+  }
 
   // Live Search
   const input = document.getElementById('search-input');

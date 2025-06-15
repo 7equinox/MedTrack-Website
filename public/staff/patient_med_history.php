@@ -38,19 +38,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $scheduleID = $_POST['ScheduleID'];
     $medName = $_POST['MedicationName'];
     $dosage = $_POST['Dosage'];
-    $intakeTime = $_POST['IntakeTime'];
+    $intakeTime = date('Y-m-d H:i:00', strtotime($_POST['IntakeTime']));
     $status = $_POST['Status'];
 
     $update = $conn->prepare("UPDATE medicationschedule SET MedicationName=?, Dosage=?, IntakeTime=?, Status=? WHERE ScheduleID=? AND PatientID=?");
-    $update->bind_param("ssssss", $medName, $dosage, $intakeTime, $status, $scheduleID, $patientID);
+    $update->bind_param("ssssis", $medName, $dosage, $intakeTime, $status, $scheduleID, $patientID);
     $update->execute();
     $update->close();
-    header("Location: patient_med_history.php?id=" . urlencode($patientID));
+    header("Location: patient_med_history.php?id=" . urlencode($patientID) . "&update_success=1");
     exit();
 }
 ?>
 
 <main>
+    <?php if (isset($_GET['update_success'])): ?>
+        <div class="alert success" id="success-panel">
+            Medication information has been successfully updated.
+        </div>
+    <?php endif; ?>
+
   <div class="history-header">
     <div>
       <p class="breadcrumb">Medication History</p>
@@ -70,34 +76,40 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         if ($result->num_rows > 0) {
             while ($row = $result->fetch_assoc()) {
+                $original_med_name = htmlspecialchars($row['MedicationName']);
+                $original_intake_time = htmlspecialchars(date('Y-m-d\TH:i:s', strtotime($row['IntakeTime'])));
+                $original_dosage = htmlspecialchars($row['Dosage']);
+                $original_status = htmlspecialchars($row['Status']);
+
                 echo '<form method="POST" class="history-card edit-row">';
                 echo '<input type="hidden" name="ScheduleID" value="' . htmlspecialchars($row['ScheduleID']) . '">';
 
                 echo '<div class="field-group">';
                 echo '<label>Medication</label>';
-                echo '<input type="text" name="MedicationName" value="' . htmlspecialchars($row['MedicationName']) . '">';
+                echo '<input type="text" name="MedicationName" value="' . $original_med_name . '" data-original-value="' . $original_med_name . '">';
                 echo '</div>';
 
                 echo '<div class="field-group">';
                 echo '<label>Intake Time</label>';
-                echo '<input type="datetime-local" name="IntakeTime" value="' . date('Y-m-d\TH:i', strtotime($row['IntakeTime'])) . '">';
+                echo '<input type="datetime-local" name="IntakeTime" value="' . $original_intake_time . '" data-original-value="' . $original_intake_time . '">';
                 echo '</div>';
 
                 echo '<div class="field-group">';
                 echo '<label>Dosage</label>';
-                echo '<input type="text" name="Dosage" value="' . htmlspecialchars($row['Dosage']) . '">';
+                echo '<input type="text" name="Dosage" value="' . $original_dosage . '" data-original-value="' . $original_dosage . '">';
                 echo '</div>';
 
                 echo '<div class="field-group">';
                 echo '<label>Status</label>';
-                echo '<select name="Status">
-                        <option ' . ($row['Status'] === 'Taken' ? 'selected' : '') . '>Taken</option>
-                        <option ' . ($row['Status'] === 'Missed' ? 'selected' : '') . '>Missed</option>
-                        <option ' . ($row['Status'] === 'Upcoming' ? 'selected' : '') . '>Upcoming</option>
+                echo '<select name="Status" data-original-value="' . $original_status . '">
+                        <option value="Taken" ' . ($row['Status'] === 'Taken' ? 'selected' : '') . '>Taken</option>
+                        <option value="Missed" ' . ($row['Status'] === 'Missed' ? 'selected' : '') . '>Missed</option>
+                        <option value="Upcoming" ' . ($row['Status'] === 'Upcoming' ? 'selected' : '') . '>Upcoming</option>
                       </select>';
                 echo '</div>';
 
                 echo '<div class="field-group btn-group">';
+                echo '<button type="button" class="btn btn-cancel" disabled>Cancel</button>';
                 echo '<button type="submit" class="btn btn-edit">Save</button>';
                 echo '</div>';
 
@@ -142,19 +154,89 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   }
   .btn-group {
     text-align: right;
+    display: flex;
+    gap: 0.5rem;
+    align-items: flex-end;
   }
-  .btn-edit {
+  .btn-edit, .btn-cancel {
     padding: 0.5rem 1rem;
-    background: #2196F3;
-    color: #fff;
     border: none;
     border-radius: 6px;
     cursor: pointer;
   }
+  .btn-edit {
+    background: #2196F3;
+    color: #fff;
+  }
   .btn-edit:hover {
     background: #1976D2;
   }
+  .btn-cancel {
+      background-color: #e0e0e0;
+      color: #333;
+  }
+  .btn-cancel:disabled {
+      background-color: #f5f5f5;
+      color: #aaa;
+      cursor: not-allowed;
+  }
+  .alert.success {
+      background-color: #d4edda;
+      color: #155724;
+      padding: 1rem;
+      border: 1px solid #c3e6cb;
+      border-radius: 8px;
+      margin-bottom: 1.5rem;
+      text-align: center;
+  }
 </style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    // Hide the success panel after 3 seconds
+    const successPanel = document.getElementById('success-panel');
+    if (successPanel) {
+        setTimeout(() => {
+            successPanel.style.transition = 'opacity 0.5s ease';
+            successPanel.style.opacity = '0';
+            setTimeout(() => successPanel.style.display = 'none', 500);
+        }, 3000);
+    }
+
+    // Handle form changes for each medication row
+    document.querySelectorAll('.edit-row').forEach(form => {
+        const inputs = form.querySelectorAll('input[name], select[name]');
+        const cancelBtn = form.querySelector('.btn-cancel');
+
+        function checkForChanges() {
+            let hasChanged = false;
+            inputs.forEach(input => {
+                if (input.value !== input.dataset.originalValue) {
+                    hasChanged = true;
+                }
+            });
+            cancelBtn.disabled = !hasChanged;
+        }
+
+        inputs.forEach(input => {
+            input.addEventListener('input', checkForChanges);
+        });
+
+        cancelBtn.addEventListener('click', function() {
+            inputs.forEach(input => {
+                input.value = input.dataset.originalValue;
+                // For select, we also need to ensure the selected property is right
+                if (input.tagName === 'SELECT') {
+                    Array.from(input.options).forEach(option => {
+                        option.selected = (option.value === input.dataset.originalValue);
+                    });
+                }
+            });
+            this.disabled = true; // Directly disable the button on click
+        });
+    });
+});
+</script>
 
 <?php
 require_once __DIR__ . '/../../templates/partials/staff_side_menu.php';
