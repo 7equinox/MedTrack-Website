@@ -54,6 +54,6 @@ if (isset($conn) && isset($_SESSION['StaffID'])) {
         </ul>
     </div>
     <div class="logout-button-container">
-        <a href="<?= $base_path ?>/public/staff_login.php" class="logout-button">Log Out</a>
+        <a href="<?= $base_path ?>/public/index.php" class="logout-button">Log Out</a>
     </div>
 </div>
