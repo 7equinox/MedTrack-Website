@@ -8,6 +8,7 @@ require_once __DIR__ . '/../../config/database.php';
 require_once __DIR__ . '/../../templates/partials/staff_header.php';
 
 $patientID = $_GET['id'] ?? '';
+$today = date('Y-m-d');
 
 if (!$patientID) {
     die("No Patient ID provided.");
@@ -82,7 +83,7 @@ if (!$patient) {
           </div>
           <div class="form-group">
               <label for="birthdate">Birthdate</label>
-              <input type="date" id="birthdate" name="Birthdate" value="<?= htmlspecialchars($patient['Birthdate'] ?? '') ?>" required />
+              <input type="date" id="birthdate" name="Birthdate" value="<?= htmlspecialchars($patient['Birthdate'] ?? '') ?>" required max="<?= $today ?>" />
           </div>
           <div class="form-group">
               <label for="sex">Sex</label>
@@ -118,6 +119,12 @@ if (!$patient) {
 
 <script>
 document.addEventListener('DOMContentLoaded', function () {
+    // Set max date for birthdate input
+    const birthdateInput = document.getElementById('birthdate');
+    if (birthdateInput) {
+        birthdateInput.max = new Date().toISOString().split("T")[0];
+    }
+
     const successPanel = document.getElementById('success-panel');
     if (successPanel) {
         setTimeout(() => {
