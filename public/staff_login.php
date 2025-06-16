@@ -7,9 +7,12 @@ $error = "";
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $staffID = trim($_POST['staff_id']);
     $password = trim($_POST['password']);
-
+    // ===
+    // ==> 1) Prepare the SQL statement
     $stmt = $conn->prepare("SELECT * FROM staff WHERE StaffID = ?");
+    // ==> 2) Bind the user input as data
     $stmt->bind_param("s", $staffID);
+    // ==> 3) Execute the safe query
     $stmt->execute();
     $result = $stmt->get_result();
     $staff = $result->fetch_assoc();
@@ -22,9 +25,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $loginSuccess = false;
 
         if ($isHashed) {
+            // ==> 4) Securely verify the password hash
             // DB password is a modern hash, verify it
             if (password_verify($password, $passwordInDb)) {
                 $loginSuccess = true;
+                // ===
                 // If a newer hashing algorithm is available, rehash and update the password
                 if (password_needs_rehash($passwordInDb, PASSWORD_DEFAULT)) {
                     $newHash = password_hash($password, PASSWORD_DEFAULT);

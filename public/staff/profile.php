@@ -15,7 +15,7 @@ $activePage = 'profile';
 
 // Handle profile picture upload
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['profile_image'])) {
-    $uploadDir = $base_path . '/uploads/';
+    $uploadDir = '../uploads/';
     $fileName = 'staff_' . $staffID . '.' . strtolower(pathinfo($_FILES['profile_image']['name'], PATHINFO_EXTENSION));
     $targetFile = $uploadDir . $fileName;
 
@@ -23,11 +23,32 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['profile_image'])) {
     $allowedTypes = ['jpg', 'jpeg', 'png', 'gif'];
 
     if (in_array($fileType, $allowedTypes)) {
+        // Get current profile picture
+        $query = "SELECT ProfilePicture FROM staff WHERE StaffID = ?";
+        $stmt = $conn->prepare($query);
+        $stmt->bind_param("s", $staffID);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $currentPicture = $result->fetch_assoc()['ProfilePicture'];
+        $stmt->close();
+
+        // Delete old profile picture if it exists and is not a default picture
+        if ($currentPicture && $currentPicture !== 'default-prof-staff.png') {
+            $oldPicturePath = $uploadDir . $currentPicture;
+            if (file_exists($oldPicturePath)) {
+                unlink($oldPicturePath);
+            }
+        }
+
         if (move_uploaded_file($_FILES['profile_image']['tmp_name'], $targetFile)) {
             $relativePath = 'uploads/' . $fileName;
             $updateStmt = $conn->prepare("UPDATE staff SET ProfilePicture = ? WHERE StaffID = ?");
             $updateStmt->bind_param("ss", $relativePath, $staffID);
             $updateStmt->execute();
+            $updateStmt->close();
+            
+            header("Location: profile.php?update_success=1");
+            exit();
         }
     }
 }

@@ -42,16 +42,16 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $stmt->close();
 }
 ?>
-
+<!-- === -->
 <?php
 $pageTitle = 'Patient Login - MedTrack';
 $base_path = './';
 require_once '../templates/partials/header.php';
 ?>
 <body class="page-patient-login">
+  <!-- === -->
   <div class="container">
     <div class="left-panel">
-      <!-- You can add a background image or slogan here -->
     </div>
     <div class="right-panel">
       <a href="index.php" class="back-button">

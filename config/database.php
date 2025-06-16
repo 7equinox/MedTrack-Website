@@ -1,8 +1,8 @@
 <?php
-$host = 'localhost';         // or your DB host
-$username = 'root';          // your MySQL username
-$password = '';              // your MySQL password
-$database = 'medtrackdb';      // your database name
+$host = 'localhost'; // DB host
+$username = 'root'; // MySQL username
+$password = ''; // MySQL password
+$database = 'medtrackdb'; // database name
 
 // Create a new connection
 $conn = new mysqli($host, $username, $password, $database);

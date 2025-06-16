@@ -3,6 +3,7 @@ $pageTitle = 'Landing Page - MedTrack';
 $base_path = './';
 require_once '../templates/partials/header.php';
 ?>
+<!-- === -->
 <body class="page-index">
   <div class="container">
     <div class="left-panel">
@@ -28,4 +29,5 @@ require_once '../templates/partials/header.php';
     </div>
   </div>
 </body>
+<!-- === -->
 </html> 
