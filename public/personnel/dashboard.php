@@ -1,10 +1,10 @@
 <?php
 session_start();
-if (!isset($_SESSION['StaffName'])) {
-    header("Location: ../../staff/staff_login.php");
+if (!isset($_SESSION['PersonnelName'])) {
+    header("Location: ../../personnel/personnel_login.php");
     exit();
 }
-$staffName = $_SESSION['StaffName'];
+$PersonnelName = $_SESSION['PersonnelName'];
 
 require_once __DIR__ . '/../../config/database.php';
 
@@ -75,11 +75,11 @@ $missedMeds = $conn->query("SELECT COUNT(*) as count FROM medicationschedule WHE
 // Missed alerts
 $missedAlerts = $conn->query("SELECT p.PatientName, p.RoomNumber, m.MedicationName, m.IntakeTime FROM medicationschedule m JOIN patients p ON m.PatientID = p.PatientID WHERE m.Status = 'Missed' AND p.IsArchived = FALSE ORDER BY m.IntakeTime DESC");
 
-$page_title = 'Staff Dashboard';
-$body_class = 'page-staff-dashboard';
+$page_title = 'Medical Personnel Dashboard';
+$body_class = 'page-personnel-dashboard';
 $base_path = '../..';
 $activePage = 'dashboard';
-require_once __DIR__ . '/../../templates/partials/staff_header.php';
+require_once __DIR__ . '/../../templates/partials/personnel_header.php';
 
 // Auto-generate reports for missed medications if not already logged
 $missedQuery = $conn->query("
@@ -100,17 +100,17 @@ while ($missed = $missedQuery->fetch_assoc()) {
     $existing = $checkReport->get_result();
 
     if ($existing->num_rows === 0) {
-        $staffID = $_SESSION['StaffID'] ?? 'System'; // fallback if not available
+        $personnelID = $_SESSION['PersonnelID'] ?? 'System'; // fallback if not available
 
-        $insertReport = $conn->prepare("INSERT INTO reports (PatientID, StaffID, ReportDetails, ReportDate) VALUES (?, ?, ?, NOW())");
-        $insertReport->bind_param("sss", $patientID, $staffID, $details);
+        $insertReport = $conn->prepare("INSERT INTO reports (PatientID, PersonnelID, ReportDetails, ReportDate) VALUES (?, ?, ?, NOW())");
+        $insertReport->bind_param("sss", $patientID, $personnelID, $details);
         $insertReport->execute();
     }
 }
 ?>
 
 <main>
-<h1 class="welcome-title">Welcome <?= htmlspecialchars($staffName) ?></h1>
+<h1 class="welcome-title">Welcome <?= htmlspecialchars($PersonnelName) ?></h1>
 
 <section class="dashboard-content">
     <div class="left-column">
@@ -235,6 +235,6 @@ while ($missed = $missedQuery->fetch_assoc()) {
 </main>
 
 <?php
-require_once __DIR__ . '/../../templates/partials/staff_side_menu.php';
-require_once __DIR__ . '/../../templates/partials/staff_footer.php';
+require_once __DIR__ . '/../../templates/partials/personnel_side_menu.php';
+require_once __DIR__ . '/../../templates/partials/personnel_footer.php';
 ?>

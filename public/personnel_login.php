@@ -5,20 +5,20 @@ require_once __DIR__ . '/../config/database.php';
 $error = "";
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $staffID = trim($_POST['staff_id']);
+    $personnelID = trim($_POST['personnel_id']);
     $password = trim($_POST['password']);
     // ===
     // ==> 1) Prepare the SQL statement
-    $stmt = $conn->prepare("SELECT * FROM staff WHERE StaffID = ?");
+    $stmt = $conn->prepare("SELECT * FROM personnel WHERE PersonnelID = ?");
     // ==> 2) Bind the user input as data
-    $stmt->bind_param("s", $staffID);
+    $stmt->bind_param("s", $personnelID);
     // ==> 3) Execute the safe query
     $stmt->execute();
     $result = $stmt->get_result();
-    $staff = $result->fetch_assoc();
+    $personnel = $result->fetch_assoc();
 
-    if ($staff) {
-        $passwordInDb = $staff['Password'];
+    if ($personnel) {
+        $passwordInDb = $personnel['Password'];
         // password_get_info returns info about a hash. If algo is 0, it's not a known hash.
         $isHashed = password_get_info($passwordInDb)['algo'] !== 0;
 
@@ -33,8 +33,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 // If a newer hashing algorithm is available, rehash and update the password
                 if (password_needs_rehash($passwordInDb, PASSWORD_DEFAULT)) {
                     $newHash = password_hash($password, PASSWORD_DEFAULT);
-                    $updateStmt = $conn->prepare("UPDATE staff SET Password = ? WHERE StaffID = ?");
-                    $updateStmt->bind_param("ss", $newHash, $staffID);
+                    $updateStmt = $conn->prepare("UPDATE personnel SET Password = ? WHERE PersonnelID = ?");
+                    $updateStmt->bind_param("ss", $newHash, $personnelID);
                     $updateStmt->execute();
                 }
             }
@@ -44,47 +44,47 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 $loginSuccess = true;
                 // Hash the password and update it in the database for future logins
                 $newHash = password_hash($password, PASSWORD_DEFAULT);
-                $updateStmt = $conn->prepare("UPDATE staff SET Password = ? WHERE StaffID = ?");
-                $updateStmt->bind_param("ss", $newHash, $staffID);
+                $updateStmt = $conn->prepare("UPDATE personnel SET Password = ? WHERE PersonnelID = ?");
+                $updateStmt->bind_param("ss", $newHash, $personnelID);
                 $updateStmt->execute();
             }
         }
 
         if ($loginSuccess) {
-            $_SESSION['StaffID'] = $staff['StaffID'];
-            $_SESSION['StaffName'] = $staff['StaffName'];
+            $_SESSION['PersonnelID'] = $personnel['PersonnelID'];
+            $_SESSION['PersonnelName'] = $personnel['PersonnelName'];
 
             if (!empty($_POST["remember"])) {
-                // Set cookie for Staff ID for 30 days
-                setcookie("remember_staff_id", $staffID, time() + (86400 * 30), "/");
+                // Set cookie for Personnel ID for 30 days
+                setcookie("remember_personnel_id", $personnelID, time() + (86400 * 30), "/");
             } else {
-                // Unset Staff ID cookie
-                if (isset($_COOKIE['remember_staff_id'])) {
-                    setcookie("remember_staff_id", "", time() - 3600, "/");
+                // Unset Personnel ID cookie
+                if (isset($_COOKIE['remember_personnel_id'])) {
+                    setcookie("remember_personnel_id", "", time() - 3600, "/");
                 }
             }
             // Always ensure the password cookie is removed for security
-            if (isset($_COOKIE['remember_staff_password'])) {
-                setcookie("remember_staff_password", "", time() - 3600, "/");
+            if (isset($_COOKIE['remember_personnel_password'])) {
+                setcookie("remember_personnel_password", "", time() - 3600, "/");
             }
 
-            header("Location: staff/dashboard.php");
+            header("Location: personnel/dashboard.php");
             exit();
         }
     }
     
     // If we reach here, it's an invalid login attempt.
-    $error = "Invalid Staff ID or Password.";
+    $error = "Invalid Personnel ID or Password.";
 }
 ?>
 
 <?php
-$pageTitle = 'Staff Login - MedTrack';
+$pageTitle = 'Medical Personnel Login - MedTrack';
 $base_path = './';
 require_once '../templates/partials/header.php';
 ?>
 
-<body class="page-staff-login">
+<body class="page-personnel-login">
   <div class="container">
     <div class="left-panel"></div>
     <div class="right-panel">
@@ -97,7 +97,7 @@ require_once '../templates/partials/header.php';
         <div class="logo">
           <img src="<?php echo $base_path; ?>images/logo.png" alt="MedTrack Logo">
         </div>
-        <h2>MedTrack Staff Log In</h2>
+        <h2>MedTrack Medical Personnel Log In</h2>
 
         <?php if (!empty($error)): ?>
           <p style="color: red;"><?= htmlspecialchars($error) ?></p>
@@ -105,8 +105,8 @@ require_once '../templates/partials/header.php';
 
         <form method="POST" action="">
           <div class="form-group">
-            <label for="staff-id">Staff ID</label>
-            <input type="text" name="staff_id" id="staff-id" required value="<?php echo htmlspecialchars($_POST['staff_id'] ?? $_COOKIE['remember_staff_id'] ?? ''); ?>" />
+            <label for="personnel-id">Medical Personnel ID</label>
+            <input type="text" name="personnel_id" id="personnel-id" required value="<?php echo htmlspecialchars($_POST['personnel_id'] ?? $_COOKIE['remember_personnel_id'] ?? ''); ?>" />
           </div>
 
           <div class="form-group">
@@ -122,7 +122,7 @@ require_once '../templates/partials/header.php';
           </div>
 
           <div class="checkbox-group">
-            <input type="checkbox" id="remember" name="remember" <?php echo isset($_POST['remember']) || ($_SERVER['REQUEST_METHOD'] !== 'POST' && isset($_COOKIE['remember_staff_id'])) ? 'checked' : ''; ?> />
+            <input type="checkbox" id="remember" name="remember" <?php echo isset($_POST['remember']) || ($_SERVER['REQUEST_METHOD'] !== 'POST' && isset($_COOKIE['remember_personnel_id'])) ? 'checked' : ''; ?> />
             <label for="remember">Remember Me</label>
           </div>
 

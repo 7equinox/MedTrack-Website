@@ -1,31 +1,31 @@
 <?php
 session_start();
-if (!isset($_SESSION['StaffID']) || !isset($_SESSION['StaffName'])) {
-    header("Location: ../../staff/staff_login.php");
+if (!isset($_SESSION['PersonnelID']) || !isset($_SESSION['PersonnelName'])) {
+    header("Location: ../../personnel/personnel_login.php");
     exit();
 }
-$staffID = $_SESSION['StaffID'];
-$staffName = $_SESSION['StaffName'];
+$PersonnelID = $_SESSION['PersonnelID'];
+$PersonnelName = $_SESSION['PersonnelName'];
 
 require_once __DIR__ . '/../../config/database.php';
 
 $page_title = 'Medication Adherence Reports';
-$body_class = 'page-staff-report-log';
+$body_class = 'page-personnel-report-log';
 $base_path = '../..';
 $activePage = 'report_log';
-require_once __DIR__ . '/../../templates/partials/staff_header.php';
+require_once __DIR__ . '/../../templates/partials/personnel_header.php';
 
-// Fetch reports only created by the logged-in staff that are NOT resolved
+// Fetch reports only created by the logged-in personnel that are NOT resolved
 $reportQuery = "
-    SELECT r.ReportID, r.PatientID, r.StaffID, r.ReportDetails, r.ReportStatus, r.ReportDate, p.PatientName
+    SELECT r.ReportID, r.PatientID, r.PersonnelID, r.ReportDetails, r.ReportStatus, r.ReportDate, p.PatientName
     FROM reports r
     JOIN patients p ON r.PatientID = p.PatientID
-    WHERE r.StaffID = ? AND r.ReportStatus != 'Resolved'
+    WHERE r.PersonnelID = ? AND r.ReportStatus != 'Resolved'
     ORDER BY r.ReportDate DESC
 ";
 
 $stmt = $conn->prepare($reportQuery);
-$stmt->bind_param("s", $staffID);
+$stmt->bind_param("s", $PersonnelID);
 $stmt->execute();
 $reports = $stmt->get_result();
 ?>
@@ -60,6 +60,6 @@ $reports = $stmt->get_result();
 </main>
 
 <?php 
-require_once __DIR__ . '/../../templates/partials/staff_side_menu.php';
-require_once __DIR__ . '/../../templates/partials/staff_footer.php'; 
+require_once __DIR__ . '/../../templates/partials/personnel_side_menu.php';
+require_once __DIR__ . '/../../templates/partials/personnel_footer.php'; 
 ?>

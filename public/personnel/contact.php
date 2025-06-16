@@ -4,7 +4,7 @@ $body_class = 'page-contact-us';
 $base_path = '../..';
 $activePage = 'contact';
 require_once __DIR__ . '/../../config/database.php';
-require_once __DIR__ . '/../../templates/partials/staff_header.php';
+require_once __DIR__ . '/../../templates/partials/personnel_header.php';
 ?>
 
     <main class="contact-main">
@@ -35,6 +35,6 @@ require_once __DIR__ . '/../../templates/partials/staff_header.php';
     </main>
 
 <?php 
-require_once __DIR__ . '/../../templates/partials/staff_side_menu.php';
-require_once __DIR__ . '/../../templates/partials/staff_footer.php'; 
+require_once __DIR__ . '/../../templates/partials/personnel_side_menu.php';
+require_once __DIR__ . '/../../templates/partials/personnel_footer.php'; 
 ?> 

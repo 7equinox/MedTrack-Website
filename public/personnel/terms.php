@@ -4,7 +4,7 @@ $body_class = 'page-patient-terms';
 $base_path = '../..';
 $activePage = 'terms';
 require_once __DIR__ . '/../../config/database.php';
-require_once __DIR__ . '/../../templates/partials/staff_header.php';
+require_once __DIR__ . '/../../templates/partials/personnel_header.php';
 ?>
 
   <main>
@@ -22,6 +22,6 @@ require_once __DIR__ . '/../../templates/partials/staff_header.php';
   </main>
 
 <?php 
-require_once __DIR__ . '/../../templates/partials/staff_side_menu.php';
-require_once __DIR__ . '/../../templates/partials/staff_footer.php'; 
+require_once __DIR__ . '/../../templates/partials/personnel_side_menu.php';
+require_once __DIR__ . '/../../templates/partials/personnel_footer.php'; 
 ?> 

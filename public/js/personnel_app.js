@@ -1,5 +1,5 @@
 document.addEventListener('DOMContentLoaded', function() {
-    // --- Common Staff Area functionality ---
+    // --- Common Personnel Area functionality ---
 
     // 1. Side Menu Toggle
     const menuToggle = document.getElementById('menuToggle');
@@ -42,7 +42,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // --- Page-specific functionality ---
 
-    // 1. Staff Dashboard: Add Medication and Searchable Selects
+    // 1. Personnel Dashboard: Add Medication and Searchable Selects
     const addMedBtn = document.getElementById('add-med-btn');
     if (addMedBtn) {
         const patientListBody = document.getElementById('patient-list-body');
@@ -257,7 +257,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    // 3. Staff Profile Page Logic
+    // 3. Personnel Profile Page Logic
     if (document.querySelector('.profile-form-card')) {
         const DUMMY_DATA = {
             "MD-2023": {
@@ -367,8 +367,8 @@ document.addEventListener('DOMContentLoaded', function() {
             
             document.getElementById('age').readOnly = true; // Keep it readonly until icon is clicked
 
-            document.getElementById('staff-id-select').querySelector('.custom-select-trigger span').textContent = "New Patient";
-            document.getElementById('staff-id-select').querySelector('.custom-select-trigger').dataset.value = "new-patient";
+            document.getElementById('personnel-id-select').querySelector('.custom-select-trigger span').textContent = "New Patient";
+            document.getElementById('personnel-id-select').querySelector('.custom-select-trigger').dataset.value = "new-patient";
             document.querySelector('.profile-sidebar .profile-pic').src = "https://via.placeholder.com/150";
 
             // Reset sex dropdown
@@ -451,7 +451,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     trigger.dataset.value = selectedValue;
                     select.classList.remove('open');
 
-                    if (dropdownId === 'staff-id-select') {
+                    if (dropdownId === 'personnel-id-select') {
                         if (selectedValue === 'add-new') {
                             clearAndEnableForm();
                         } else {
@@ -471,7 +471,7 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         }
 
-        initializeDropdown('staff-id-select');
+        initializeDropdown('personnel-id-select');
         initializeDropdown('sex-select');
 
         // --- Close dropdown when clicking outside ---
@@ -481,7 +481,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
         // --- Save Button Logic ---
         document.querySelector('.save-btn').addEventListener('click', () => {
-            const staffIdTrigger = document.getElementById('staff-id-select').querySelector('.custom-select-trigger');
+            const personnelIdTrigger = document.getElementById('personnel-id-select').querySelector('.custom-select-trigger');
             const sexSelect = document.getElementById('sex-select');
 
             const birthdateInput = document.getElementById('birthdate');
@@ -491,7 +491,7 @@ document.addEventListener('DOMContentLoaded', function() {
             }
 
             const data = {
-                staffId: staffIdTrigger.dataset.value,
+                personnelId: personnelIdTrigger.dataset.value,
                 birthdate: birthdateValue,
                 age: document.getElementById('age').value,
                 name: document.getElementById('name').value,
@@ -584,7 +584,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // 5. Staff Dashboard: Real-time search for medication table
+    // 5. Personnel Dashboard: Real-time search for medication table
     const dashboardSearchInput = document.getElementById('dashboard-search-input');
     if (dashboardSearchInput) {
         const patientListBody = document.getElementById('patient-list-body');
