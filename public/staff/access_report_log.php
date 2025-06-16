@@ -38,7 +38,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['status'])) {
     $updateStmt = $conn->prepare("UPDATE reports SET ReportStatus = ? WHERE ReportID = ?");
     $updateStmt->bind_param("si", $newStatus, $reportID);
     $updateStmt->execute();
-    header("Location: access_report_log.php?report=" . $reportID);
+    header("Location: access_report_log.php?report=" . $reportID . "&update_success=1");
     exit();
 }
 
@@ -46,6 +46,12 @@ require_once __DIR__ . '/../../templates/partials/staff_header.php';
 ?>
 
 <main style="max-width: 900px; margin: auto; padding: 2rem;">
+    <?php if (isset($_GET['update_success'])): ?>
+        <div class="alert success" id="success-panel" style="margin-bottom: 1.5rem; background-color: #d4edda; color: #155724; padding: 1rem; border: 1px solid #c3e6cb; border-radius: 8px;">
+            Report status has been successfully updated.
+        </div>
+    <?php endif; ?>
+
     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem;">
         <h1 style="font-size:2rem; font-weight:600;">Report #<?= htmlspecialchars($report['ReportID']) ?></h1>
         <a href="report_log.php" style="text-decoration:none; background:#e0e0e0; padding:10px 18px; border-radius:6px; color:#333;">← Back</a>
@@ -83,6 +89,19 @@ require_once __DIR__ . '/../../templates/partials/staff_header.php';
         </button>
     </form>
 </main>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const successPanel = document.getElementById('success-panel');
+    if (successPanel) {
+        setTimeout(() => {
+            successPanel.style.transition = 'opacity 0.5s ease';
+            successPanel.style.opacity = '0';
+            setTimeout(() => successPanel.style.display = 'none', 500);
+        }, 3000);
+    }
+});
+</script>
 
 <?php 
 require_once __DIR__ . '/../../templates/partials/staff_side_menu.php';

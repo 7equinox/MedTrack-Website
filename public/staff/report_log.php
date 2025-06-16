@@ -15,13 +15,13 @@ $base_path = '../..';
 $activePage = 'report_log';
 require_once __DIR__ . '/../../templates/partials/staff_header.php';
 
-// Fetch reports only created by the logged-in staff
+// Fetch reports only created by the logged-in staff that are NOT resolved
 $reportQuery = "
-    SELECT r.ReportID, r.PatientID, r.StaffID, r.ReportDetails, r.ReportStatus, p.PatientName
+    SELECT r.ReportID, r.PatientID, r.StaffID, r.ReportDetails, r.ReportStatus, r.ReportDate, p.PatientName
     FROM reports r
     JOIN patients p ON r.PatientID = p.PatientID
-    WHERE r.StaffID = ?
-    ORDER BY r.ReportID DESC
+    WHERE r.StaffID = ? AND r.ReportStatus != 'Resolved'
+    ORDER BY r.ReportDate DESC
 ";
 
 $stmt = $conn->prepare($reportQuery);
@@ -42,6 +42,9 @@ $reports = $stmt->get_result();
                 <div class="report-card">
                     <div>
                         <h2>Report No. <?= htmlspecialchars($report['ReportID']) ?></h2>
+                        <p style="font-size: 0.9rem; color: #666; margin-bottom: 0.5rem;">
+                            <?= date('M d, Y, h:i A', strtotime($report['ReportDate'])) ?>
+                        </p>
                         <p>[<?= htmlspecialchars($report['PatientID']) ?>] <?= htmlspecialchars($report['PatientName']) ?></p>
                         <p class="report-snippet"><?= nl2br(htmlspecialchars(substr($report['ReportDetails'], 0, 100))) ?>...</p>
                     </div>
