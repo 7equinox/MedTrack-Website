@@ -1,17 +1,17 @@
 <?php
 session_start();
-if (!isset($_SESSION['PersonnelID'])) {
-    header("Location: ../../personnel/personnel_login.php");
+if (!isset($_SESSION['DoctorID'])) {
+    header("Location: ../../doctor/doctor_login.php");
     exit();
 }
 
 $page_title = 'Archived Patients';
-$body_class = 'page-personnel-archive';
+$body_class = 'page-doctor-archive';
 $base_path = '../..';
 $activePage = 'patient_list';
 
 require_once __DIR__ . '/../../config/database.php';
-require_once __DIR__ . '/../../templates/partials/personnel_header.php';
+require_once __DIR__ . '/../../templates/partials/doctor_header.php';
 
 // Fetch archived patients
 $sql = "SELECT PatientID, PatientName, RoomNumber 
@@ -92,6 +92,6 @@ function restorePatient(pid) {
 </script>
 
 <?php
-require_once __DIR__ . '/../../templates/partials/personnel_side_menu.php';
-require_once __DIR__ . '/../../templates/partials/personnel_footer.php';
+require_once __DIR__ . '/../../templates/partials/doctor_side_menu.php';
+require_once __DIR__ . '/../../templates/partials/doctor_footer.php';
 ?>

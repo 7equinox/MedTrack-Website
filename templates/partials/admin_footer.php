@@ -1,3 +1,3 @@
-<script src="<?= $base_path ?>/public/js/personnel_app.js"></script>
+<script src="<?= $base_path ?>/public/js/doctor_app.js"></script>
 </body>
 </html> 

@@ -1,10 +1,10 @@
 <?php
 session_start();
-if (!isset($_SESSION['PersonnelName'])) {
-    header("Location: ../../personnel/personnel_login.php");
+if (!isset($_SESSION['DoctorName'])) {
+    header("Location: ../../doctor/doctor_login.php");
     exit();
 }
-$PersonnelName = $_SESSION['PersonnelName'];
+$DoctorName = $_SESSION['DoctorName'];
 
 require_once __DIR__ . '/../../config/database.php';
 
@@ -135,11 +135,11 @@ $missedMeds = $conn->query("SELECT COUNT(*) as count FROM medicationschedule WHE
 // Missed alerts
 $missedAlerts = $conn->query("SELECT p.PatientName, p.RoomNumber, m.MedicationName, m.Dosage, m.MedicationFor, m.IntakeTime FROM medicationschedule m JOIN patients p ON m.PatientID = p.PatientID WHERE m.Status = 'Missed' AND p.IsArchived = FALSE ORDER BY m.IntakeTime DESC");
 
-$page_title = 'Medical Personnel Dashboard';
-$body_class = 'page-personnel-dashboard';
+$page_title = 'Doctor Dashboard';
+$body_class = 'page-doctor-dashboard';
 $base_path = '../..';
 $activePage = 'dashboard';
-require_once __DIR__ . '/../../templates/partials/personnel_header.php';
+require_once __DIR__ . '/../../templates/partials/doctor_header.php';
 
 // Auto-generate reports for missed medications if not already logged
 $missedQuery = $conn->query("
@@ -163,17 +163,17 @@ while ($missed = $missedQuery->fetch_assoc()) {
     $existing = $checkReport->get_result();
 
     if ($existing->num_rows === 0) {
-        $personnelID = $_SESSION['PersonnelID'] ?? 'System'; // fallback if not available
+        $doctorID = $_SESSION['DoctorID'] ?? 'System'; // fallback if not available
 
-        $insertReport = $conn->prepare("INSERT INTO reports (PatientID, ScheduleID, PersonnelID, ReportDetails, ReportDate) VALUES (?, ?, ?, ?, NOW())");
-        $insertReport->bind_param("siss", $patientID, $scheduleID, $personnelID, $details);
+        $insertReport = $conn->prepare("INSERT INTO reports (PatientID, ScheduleID, DoctorID, ReportDetails, ReportDate) VALUES (?, ?, ?, ?, NOW())");
+        $insertReport->bind_param("siss", $patientID, $scheduleID, $doctorID, $details);
         $insertReport->execute();
     }
 }
 ?>
 
 <main>
-<h1 class="welcome-title">Welcome <?= htmlspecialchars($PersonnelName) ?></h1>
+<h1 class="welcome-title">Welcome <?= htmlspecialchars($DoctorName) ?></h1>
 
 <section class="dashboard-content">
     <div class="left-column">
@@ -395,6 +395,6 @@ while ($missed = $missedQuery->fetch_assoc()) {
 </style>
 
 <?php
-require_once __DIR__ . '/../../templates/partials/personnel_side_menu.php';
-require_once __DIR__ . '/../../templates/partials/personnel_footer.php';
+require_once __DIR__ . '/../../templates/partials/doctor_side_menu.php';
+require_once __DIR__ . '/../../templates/partials/doctor_footer.php';
 ?>

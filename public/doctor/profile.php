@@ -1,22 +1,22 @@
 <?php
 session_start();
-if (!isset($_SESSION['PersonnelID']) || !isset($_SESSION['PersonnelName'])) {
-    header("Location: ../../personnel/personnel_login.php");
+if (!isset($_SESSION['DoctorID']) || !isset($_SESSION['DoctorName'])) {
+    header("Location: ../../doctor/doctor_login.php");
     exit();
 }
 
 require_once __DIR__ . '/../../config/database.php';
 
-$PersonnelID = $_SESSION['PersonnelID'];
-$page_title = 'Personnel Profile';
-$body_class = 'page-personnel-profile';
+$DoctorID = $_SESSION['DoctorID'];
+$page_title = 'Doctor Profile';
+$body_class = 'page-doctor-profile';
 $base_path = '../..';
 $activePage = 'profile';
 
 // Handle profile picture upload
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['profile_image'])) {
     $uploadDir = '../uploads/';
-    $fileName = 'personnel_' . $PersonnelID . '.' . strtolower(pathinfo($_FILES['profile_image']['name'], PATHINFO_EXTENSION));
+    $fileName = 'doctor_' . $DoctorID . '.' . strtolower(pathinfo($_FILES['profile_image']['name'], PATHINFO_EXTENSION));
     $targetFile = $uploadDir . $fileName;
 
     $fileType = strtolower(pathinfo($targetFile, PATHINFO_EXTENSION));
@@ -24,16 +24,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['profile_image'])) {
 
     if (in_array($fileType, $allowedTypes)) {
         // Get current profile picture
-        $query = "SELECT ProfilePicture FROM personnel WHERE PersonnelID = ?";
+        $query = "SELECT ProfilePicture FROM doctor WHERE DoctorID = ?";
         $stmt = $conn->prepare($query);
-        $stmt->bind_param("s", $PersonnelID);
+        $stmt->bind_param("s", $DoctorID);
         $stmt->execute();
         $result = $stmt->get_result();
         $currentPicture = $result->fetch_assoc()['ProfilePicture'];
         $stmt->close();
 
         // Delete old profile picture if it exists and is not a default picture
-        if ($currentPicture && $currentPicture !== 'default-prof-personnel.png') {
+        if ($currentPicture && $currentPicture !== 'default-prof-doctor.png') {
             $oldPicturePath = $uploadDir . $currentPicture;
             if (file_exists($oldPicturePath)) {
                 unlink($oldPicturePath);
@@ -42,8 +42,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['profile_image'])) {
 
         if (move_uploaded_file($_FILES['profile_image']['tmp_name'], $targetFile)) {
             $relativePath = 'uploads/' . $fileName;
-            $updateStmt = $conn->prepare("UPDATE personnel SET ProfilePicture = ? WHERE PersonnelID = ?");
-            $updateStmt->bind_param("ss", $relativePath, $PersonnelID);
+            $updateStmt = $conn->prepare("UPDATE doctor SET ProfilePicture = ? WHERE DoctorID = ?");
+            $updateStmt->bind_param("ss", $relativePath, $DoctorID);
             $updateStmt->execute();
             $updateStmt->close();
             
@@ -55,37 +55,37 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['profile_image'])) {
 
 // Handle profile info update
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_profile'])) {
-    $name = $_POST['PersonnelName'] ?? '';
+    $name = $_POST['DoctorName'] ?? '';
     $email = $_POST['Email'] ?? '';
     $contact = $_POST['ContactNumber'] ?? '';
 
-    $updateInfoStmt = $conn->prepare("UPDATE personnel SET PersonnelName = ?, Email = ?, ContactNumber = ? WHERE PersonnelID = ?");
-    $updateInfoStmt->bind_param("ssss", $name, $email, $contact, $PersonnelID);
+    $updateInfoStmt = $conn->prepare("UPDATE doctor SET DoctorName = ?, Email = ?, ContactNumber = ? WHERE DoctorID = ?");
+    $updateInfoStmt->bind_param("ssss", $name, $email, $contact, $DoctorID);
     $updateInfoStmt->execute();
 
-    $_SESSION['PersonnelName'] = $name; // Update session with new name
+    $_SESSION['DoctorName'] = $name; // Update session with new name
     header("Location: profile.php?update_success=1");
     exit();
 }
 
-// Fetch personnel info
-$query = "SELECT * FROM personnel WHERE PersonnelID = ?";
+// Fetch doctor info
+$query = "SELECT * FROM doctor WHERE DoctorID = ?";
 $stmt = $conn->prepare($query);
-$stmt->bind_param("s", $PersonnelID);
+$stmt->bind_param("s", $DoctorID);
 $stmt->execute();
 $result = $stmt->get_result();
 
 if ($result && $result->num_rows > 0) {
-    $personnel = $result->fetch_assoc();
+    $doctor = $result->fetch_assoc();
 } else {
-    echo "<p>Medical Personnel not found.</p>";
+    echo "<p>Doctor not found.</p>";
     exit();
 }
 
 // Profile picture path
-$profilePicPath = !empty($personnel['ProfilePicture']) ? $base_path . '/' . $personnel['ProfilePicture'] : $base_path . '/public/images/default-prof-personnel.png';
+$profilePicPath = !empty($doctor['ProfilePicture']) ? $base_path . '/' . $doctor['ProfilePicture'] : $base_path . '/public/images/default-prof-doctor.png';
 
-require_once __DIR__ . '/../../templates/partials/personnel_header.php';
+require_once __DIR__ . '/../../templates/partials/doctor_header.php';
 ?>
 
 <main>
@@ -116,14 +116,14 @@ require_once __DIR__ . '/../../templates/partials/personnel_header.php';
             <input type="hidden" name="update_profile" value="1">
             <div class="form-grid">
                 <div class="input-group">
-                    <label for="personnel-id">Medical Personnel ID</label>
-                    <input type="text" id="personnel-id" value="<?= htmlspecialchars($personnel['PersonnelID']) ?>" readonly>
+                    <label for="doctor-id">Doctor ID</label>
+                    <input type="text" id="doctor-id" value="<?= htmlspecialchars($doctor['DoctorID']) ?>" readonly>
                 </div>
 
                 <div class="input-group col-span-2">
                     <label for="name">Name</label>
                     <div class="input-with-icon">
-                        <input type="text" id="name" name="PersonnelName" value="<?= htmlspecialchars($personnel['PersonnelName']) ?>" readonly>
+                        <input type="text" id="name" name="DoctorName" value="<?= htmlspecialchars($doctor['DoctorName']) ?>" readonly>
                         <i class="fas fa-edit edit-icon" data-target="name"></i>
                     </div>
                 </div>
@@ -131,7 +131,7 @@ require_once __DIR__ . '/../../templates/partials/personnel_header.php';
                 <div class="input-group col-span-2">
                     <label for="email">Email</label>
                     <div class="input-with-icon">
-                        <input type="email" id="email" name="Email" value="<?= htmlspecialchars($personnel['Email']) ?>" readonly>
+                        <input type="email" id="email" name="Email" value="<?= htmlspecialchars($doctor['Email']) ?>" readonly>
                         <i class="fas fa-edit edit-icon" data-target="email"></i>
                     </div>
                 </div>
@@ -139,7 +139,7 @@ require_once __DIR__ . '/../../templates/partials/personnel_header.php';
                 <div class="input-group">
                     <label for="contact">Contact No.</label>
                     <div class="input-with-icon">
-                        <input type="text" id="contact" name="ContactNumber" value="<?= htmlspecialchars($personnel['ContactNumber']) ?>" readonly>
+                        <input type="text" id="contact" name="ContactNumber" value="<?= htmlspecialchars($doctor['ContactNumber']) ?>" readonly>
                         <i class="fas fa-edit edit-icon" data-target="contact"></i>
                     </div>
                 </div>
@@ -154,8 +154,8 @@ require_once __DIR__ . '/../../templates/partials/personnel_header.php';
 </main>
 
 <?php 
-require_once __DIR__ . '/../../templates/partials/personnel_side_menu.php';
-require_once __DIR__ . '/../../templates/partials/personnel_footer.php'; 
+require_once __DIR__ . '/../../templates/partials/doctor_side_menu.php';
+require_once __DIR__ . '/../../templates/partials/doctor_footer.php'; 
 ?>
 
 <script>

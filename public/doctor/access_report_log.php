@@ -3,7 +3,7 @@ session_start();
 require_once __DIR__ . '/../../config/database.php';
 
 $page_title = 'Access Report Log';
-$body_class = 'page-personnel-access-report-log';
+$body_class = 'page-doctor-access-report-log';
 $base_path = '../..';
 $activePage = 'report_log';
 
@@ -16,11 +16,11 @@ if (!$reportID) {
 
 // Fetch report
 $stmt = $conn->prepare("
-    SELECT r.ReportID, r.PatientID, r.PersonnelID, r.ReportDetails, r.ReportStatus,
-           p.PatientName, p.RoomNumber, s.PersonnelName
+    SELECT r.ReportID, r.PatientID, r.DoctorID, r.ReportDetails, r.ReportStatus,
+           p.PatientName, p.RoomNumber, s.DoctorName
     FROM reports r
     JOIN patients p ON r.PatientID = p.PatientID
-    LEFT JOIN personnel s ON r.PersonnelID = s.PersonnelID
+    LEFT JOIN doctor s ON r.DoctorID = s.DoctorID
     WHERE r.ReportID = ?
 ");
 $stmt->bind_param("i", $reportID);
@@ -71,7 +71,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['status'])) {
     }
 }
 
-require_once __DIR__ . '/../../templates/partials/personnel_header.php';
+require_once __DIR__ . '/../../templates/partials/doctor_header.php';
 ?>
 
 <main style="max-width: 900px; margin: auto; padding: 2rem;">
@@ -88,7 +88,7 @@ require_once __DIR__ . '/../../templates/partials/personnel_header.php';
 
     <form method="POST" style="background:white; padding:2rem; border-radius:12px; box-shadow:0 4px 12px rgba(0,0,0,0.08); display:flex; flex-direction:column; gap:1.5rem;">
         <div>
-            <p><strong>From:</strong> <?= htmlspecialchars($report['PersonnelName'] ?? 'System') ?></p>
+            <p><strong>From:</strong> <?= htmlspecialchars($report['DoctorName'] ?? 'System') ?></p>
             <p><strong>Patient:</strong> <?= htmlspecialchars($report['PatientName']) ?> <span style="color:gray;">(Room <?= htmlspecialchars($report['RoomNumber']) ?>)</span></p>
         </div>
 
@@ -133,6 +133,6 @@ document.addEventListener('DOMContentLoaded', function () {
 </script>
 
 <?php 
-require_once __DIR__ . '/../../templates/partials/personnel_side_menu.php';
-require_once __DIR__ . '/../../templates/partials/personnel_footer.php'; 
+require_once __DIR__ . '/../../templates/partials/doctor_side_menu.php';
+require_once __DIR__ . '/../../templates/partials/doctor_footer.php'; 
 ?>

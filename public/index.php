@@ -16,10 +16,10 @@ require_once '../templates/partials/header.php';
         </div>
         <h2>Welcome to</h2>
         <h1>MedTrack</h1>
-        <p class="instruction">Hello! Please log in as a Patient or Medical Personnel to proceed.</p>
+        <p class="instruction">Good day! Please log in to proceed.</p>
         <div class="buttons">
           <a href="patient_login.php" class="btn btn-patient">Patient</a>
-          <a href="personnel_login.php" class="btn btn-personnel">Medical Personnel</a>
+          <a href="doctor_login.php" class="btn btn-doctor">Doctor</a>
           <a href="admin_login.php" class="btn btn-admin">Administrator</a>
         </div>
         <p class="terms">

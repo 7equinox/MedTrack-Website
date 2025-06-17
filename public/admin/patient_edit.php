@@ -48,7 +48,7 @@ if (!$patient) {
 }
 
 $page_title = 'Edit Patient';
-$body_class = 'page-personnel-patient-edit';
+$body_class = 'page-doctor-patient-edit';
 $base_path = '../..';
 $activePage = 'patients';
 $today = date('Y-m-d');

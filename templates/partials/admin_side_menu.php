@@ -18,7 +18,7 @@
         </a>
         <ul class="side-menu-links">
             <li><a href="dashboard.php" class="<?= ($activePage ?? '') == 'dashboard' ? 'active' : '' ?>">Dashboard</a></li>
-            <li><a href="personnel_management.php" class="<?= ($activePage ?? '') == 'personnel' ? 'active' : '' ?>">Personnel</a></li>
+            <li><a href="doctor_management.php" class="<?= ($activePage ?? '') == 'doctor' ? 'active' : '' ?>">Doctor</a></li>
             <li><a href="patient_management.php" class="<?= ($activePage ?? '') == 'patients' ? 'active' : '' ?>">Patients</a></li>
         </ul>
     </div>

@@ -40,7 +40,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 
 $page_title = 'Add Patient';
-$body_class = 'page-personnel-patient-edit';
+$body_class = 'page-doctor-patient-edit';
 $base_path = '../..';
 $activePage = 'patients';
 $today = date('Y-m-d');

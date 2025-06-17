@@ -1,10 +1,10 @@
 <?php
 $page_title = 'Patient Management List';
-$body_class = 'page-personnel-patient-list';
+$body_class = 'page-doctor-patient-list';
 $base_path = '../..';
 $activePage = 'patient_list';
 require_once __DIR__ . '/../../config/database.php';
-require_once __DIR__ . '/../../templates/partials/personnel_header.php';
+require_once __DIR__ . '/../../templates/partials/doctor_header.php';
 
 // Fetch non-archived patients
 $sql = "SELECT PatientID, PatientName, RoomNumber FROM patients WHERE IsArchived = FALSE ORDER BY PatientName";
@@ -94,8 +94,8 @@ $today = date('Y-m-d');
                 <td><?= htmlspecialchars($p['PatientName']) ?></td>
                 <td><?= htmlspecialchars($p['RoomNumber']) ?></td>
                 <td class="action-cell">
-                  <a href="<?= $base_path ?>/public/personnel/patient_med_history.php?id=<?= urlencode($p['PatientID']) ?>" class="btn btn-view">View</a>
-                  <a href="<?= $base_path ?>/public/personnel/patient_edit.php?id=<?= urlencode($p['PatientID']) ?>" class="btn btn-edit">Edit</a>
+                  <a href="<?= $base_path ?>/public/doctor/patient_med_history.php?id=<?= urlencode($p['PatientID']) ?>" class="btn btn-view">View</a>
+                  <a href="<?= $base_path ?>/public/doctor/patient_edit.php?id=<?= urlencode($p['PatientID']) ?>" class="btn btn-edit">Edit</a>
                   <button class="btn btn-archive" onclick="archivePatient('<?= htmlspecialchars($p['PatientID']) ?>')">
                     <i class="fas fa-archive"></i>
                   </button>
@@ -112,25 +112,26 @@ $today = date('Y-m-d');
 </main>
 
 <script>
+  function showGlobalMessage(message, type = 'success') {
+      const globalMessagePanel = document.getElementById('global-message-panel');
+      if (!globalMessagePanel) return;
+
+      globalMessagePanel.textContent = message;
+      globalMessagePanel.style.backgroundColor = type === 'success' ? '#28a745' : '#dc3545';
+      globalMessagePanel.style.color = 'white';
+      globalMessagePanel.style.display = 'block';
+
+      setTimeout(() => {
+          globalMessagePanel.style.transition = 'opacity 0.5s ease';
+          globalMessagePanel.style.opacity = '0';
+          setTimeout(() => {
+              globalMessagePanel.style.display = 'none';
+              globalMessagePanel.style.opacity = '1'; // Reset for next time
+          }, 500);
+      }, 4000);
+  }
+
   document.addEventListener('DOMContentLoaded', function() {
-    const globalMessagePanel = document.getElementById('global-message-panel');
-
-    function showGlobalMessage(message, type = 'success') {
-        globalMessagePanel.textContent = message;
-        globalMessagePanel.style.backgroundColor = type === 'success' ? '#28a745' : '#dc3545';
-        globalMessagePanel.style.color = 'white';
-        globalMessagePanel.style.display = 'block';
-
-        setTimeout(() => {
-            globalMessagePanel.style.transition = 'opacity 0.5s ease';
-            globalMessagePanel.style.opacity = '0';
-            setTimeout(() => {
-                globalMessagePanel.style.display = 'none';
-                globalMessagePanel.style.opacity = '1'; // Reset for next time
-            }, 500);
-        }, 4000);
-    }
-
     // Toggle Add Patient Form
     const toggleBtn = document.getElementById('toggleAddForm');
     const formContainer = document.getElementById('addPatientContainer');
@@ -270,8 +271,8 @@ $today = date('Y-m-d');
           <td>${escapeHTML(patient.PatientName)}</td>
           <td>${escapeHTML(patient.RoomNumber)}</td>
           <td class="action-cell">
-              <a href="${basePath}/public/personnel/patient_med_history.php?id=${encodeURIComponent(patient.PatientID)}" class="btn btn-view">View</a>
-              <a href="${basePath}/public/personnel/patient_edit.php?id=${encodeURIComponent(patient.PatientID)}" class="btn btn-edit">Edit</a>
+              <a href="${basePath}/public/doctor/patient_med_history.php?id=${encodeURIComponent(patient.PatientID)}" class="btn btn-view">View</a>
+              <a href="${basePath}/public/doctor/patient_edit.php?id=${encodeURIComponent(patient.PatientID)}" class="btn btn-edit">Edit</a>
               <button class="btn btn-archive" onclick="archivePatient('${escapeHTML(patient.PatientID)}')">
                   <i class="fas fa-archive"></i>
               </button>
@@ -297,7 +298,10 @@ $today = date('Y-m-d');
             alert('Archive failed.');
           }
         })
-        .catch(() => alert('Request error.'));
+        .catch((error) => {
+            console.error('Archive error:', error);
+            alert('Request error.');
+        });
     }
   }
 </script>
@@ -314,6 +318,6 @@ $today = date('Y-m-d');
 </style>
 
 <?php
-require_once __DIR__ . '/../../templates/partials/personnel_side_menu.php';
-require_once __DIR__ . '/../../templates/partials/personnel_footer.php';
+require_once __DIR__ . '/../../templates/partials/doctor_side_menu.php';
+require_once __DIR__ . '/../../templates/partials/doctor_footer.php';
 ?>

@@ -1,14 +1,14 @@
 <?php
 $page_title = 'Patient Medication History';
-$body_class = 'page-personnel-patient-med-history';
+$body_class = 'page-doctor-patient-med-history';
 $base_path = '../..';
 $activePage = 'patient_list';
-require_once __DIR__ . '/../../templates/partials/personnel_header.php';
+require_once __DIR__ . '/../../templates/partials/doctor_header.php';
 require_once __DIR__ . '/../../config/database.php';
 
 if (!isset($_GET['id']) || empty($_GET['id'])) {
     echo "<main><p class='error'>No Patient ID provided.</p></main>";
-    require_once __DIR__ . '/../../templates/partials/personnel_footer.php';
+    require_once __DIR__ . '/../../templates/partials/doctor_footer.php';
     exit();
 }
 
@@ -18,7 +18,7 @@ $query = "SELECT PatientName FROM patients WHERE PatientID = ?";
 $stmt = $conn->prepare($query);
 if (!$stmt) {
     echo "<main><p class='error'>Failed to prepare query: " . htmlspecialchars($conn->error) . "</p></main>";
-    require_once __DIR__ . '/../../templates/partials/personnel_footer.php';
+    require_once __DIR__ . '/../../templates/partials/doctor_footer.php';
     exit();
 }
 
@@ -30,7 +30,7 @@ $stmt->close();
 
 if (!$patient) {
     echo "<main><p class='error'>Invalid Patient ID submitted.</p></main>";
-    require_once __DIR__ . '/../../templates/partials/personnel_footer.php';
+    require_once __DIR__ . '/../../templates/partials/doctor_footer.php';
     exit();
 }
 
@@ -63,7 +63,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       <p class="breadcrumb">Medication History</p>
       <h1 class="patient-title"><?= htmlspecialchars($patientID) . ' - ' . htmlspecialchars($patient['PatientName']); ?></h1>
     </div>
-    <a href="<?= $base_path; ?>/public/personnel/patient_list.php" class="btn back-btn">Go Back to Patient List</a>
+    <a href="<?= $base_path; ?>/public/doctor/patient_list.php" class="btn back-btn">Go Back to Patient List</a>
   </div>
 
   <div class="history-list">
@@ -281,6 +281,6 @@ document.addEventListener('DOMContentLoaded', function () {
 </script>
 
 <?php
-require_once __DIR__ . '/../../templates/partials/personnel_side_menu.php';
-require_once __DIR__ . '/../../templates/partials/personnel_footer.php';
+require_once __DIR__ . '/../../templates/partials/doctor_side_menu.php';
+require_once __DIR__ . '/../../templates/partials/doctor_footer.php';
 ?>

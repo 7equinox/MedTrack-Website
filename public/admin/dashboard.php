@@ -17,8 +17,8 @@ require_once __DIR__ . '/../../templates/partials/admin_header.php';
     </div>
 
     <div class="management-links">
-        <a href="personnel_management.php" class="management-link link-personnel">
-            Manage Personnel
+        <a href="doctor_management.php" class="management-link link-doctor">
+            Manage Doctor
         </a>
         <a href="patient_management.php" class="management-link link-patients">
             Manage Patients
@@ -30,4 +30,4 @@ require_once __DIR__ . '/../../templates/partials/admin_header.php';
 require_once __DIR__ . '/../../templates/partials/admin_side_menu.php';
 require_once __DIR__ . '/../../templates/partials/admin_footer.php';
 ?>
-<script src="../js/personnel_app.js"></script> 
+<script src="../js/doctor_app.js"></script> 

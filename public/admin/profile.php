@@ -161,4 +161,4 @@ require_once __DIR__ . '/../../templates/partials/admin_header.php';
 require_once __DIR__ . '/../../templates/partials/admin_side_menu.php';
 require_once __DIR__ . '/../../templates/partials/admin_footer.php';
 ?>
-<script src="../js/personnel_app.js"></script>
+<script src="../js/doctor_app.js"></script>

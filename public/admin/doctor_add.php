@@ -11,25 +11,25 @@ $error_message = '';
 $success_message = '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $personnelID = trim($_POST['PersonnelID']);
-    $personnelName = trim($_POST['PersonnelName']);
+    $doctorID = trim($_POST['DoctorID']);
+    $doctorName = trim($_POST['DoctorName']);
     $email = trim($_POST['Email']);
     $password = $_POST['Password'];
     $contactNumber = trim($_POST['ContactNumber']);
 
-    if (empty($personnelID) || empty($personnelName) || empty($email) || empty($password)) {
+    if (empty($doctorID) || empty($doctorName) || empty($email) || empty($password)) {
         $error_message = "ID, Name, Email, and Password are required.";
     } else {
         $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
         
-        $stmt = $conn->prepare("INSERT INTO personnel (PersonnelID, PersonnelName, Email, Password, ContactNumber) VALUES (?, ?, ?, ?, ?)");
-        $stmt->bind_param("sssss", $personnelID, $personnelName, $email, $hashedPassword, $contactNumber);
+        $stmt = $conn->prepare("INSERT INTO doctor (DoctorID, DoctorName, Email, Password, ContactNumber) VALUES (?, ?, ?, ?, ?)");
+        $stmt->bind_param("sssss", $doctorID, $doctorName, $email, $hashedPassword, $contactNumber);
         
         if ($stmt->execute()) {
-            $success_message = "Medical personnel '" . htmlspecialchars($personnelName) . "' added successfully!";
+            $success_message = "Medical doctor '" . htmlspecialchars($doctorName) . "' added successfully!";
         } else {
             if ($conn->errno == 1062) { // Duplicate entry
-                $error_message = "Error: A personnel member with this ID or Email already exists.";
+                $error_message = "Error: A doctor member with this ID or Email already exists.";
             } else {
                 $error_message = "Database error: " . htmlspecialchars($stmt->error);
             }
@@ -38,15 +38,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
-$page_title = 'Add Personnel';
-$body_class = 'page-personnel-patient-edit';
+$page_title = 'Add Doctor';
+$body_class = 'page-doctor-patient-edit';
 $base_path = '../..';
-$activePage = 'personnel';
+$activePage = 'doctor';
 require_once __DIR__ . '/../../templates/partials/admin_header.php';
 ?>
 
 <main>
-    <h1 class="page-title" style="text-align: center; margin-bottom: 2rem;">Add New Medical Personnel</h1>
+    <h1 class="page-title" style="text-align: center; margin-bottom: 2rem;">Add New Medical Doctor</h1>
 
     <?php if ($success_message): ?>
         <div class="alert success" style="max-width: 900px; margin: 0 auto 1.5rem auto;"><?= $success_message ?></div>
@@ -58,12 +58,12 @@ require_once __DIR__ . '/../../templates/partials/admin_header.php';
     <form method="POST" class="add-med-form" style="display: block; max-width: 900px; margin: auto; padding: 2.5rem; border-radius: 12px;">
         <div class="form-grid">
             <div class="form-group">
-                <label for="PersonnelID">Personnel ID</label>
-                <input type="text" id="PersonnelID" name="PersonnelID" placeholder="e.g., MP-0006" required>
+                <label for="DoctorID">Doctor ID</label>
+                <input type="text" id="DoctorID" name="DoctorID" placeholder="e.g., MP-0006" required>
             </div>
             <div class="form-group">
-                <label for="PersonnelName">Full Name</label>
-                <input type="text" id="PersonnelName" name="PersonnelName" required>
+                <label for="DoctorName">Full Name</label>
+                <input type="text" id="DoctorName" name="DoctorName" required>
             </div>
             <div class="form-group col-span-2">
                 <label for="Email">Email Address</label>
@@ -79,8 +79,8 @@ require_once __DIR__ . '/../../templates/partials/admin_header.php';
             </div>
         </div>
         <div class="form-actions" style="margin-top: 1rem;">
-            <a href="personnel_management.php" class="btn btn-cancel">Cancel</a>
-            <button type="submit" class="btn btn-save">Add Personnel</button>
+            <a href="doctor_management.php" class="btn btn-cancel">Cancel</a>
+            <button type="submit" class="btn btn-save">Add Doctor</button>
         </div>
     </form>
 </main>

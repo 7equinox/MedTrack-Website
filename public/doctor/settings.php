@@ -1,32 +1,32 @@
 <?php
 session_start();
 $page_title = 'Settings';
-$body_class = 'page-personnel-settings';
+$body_class = 'page-doctor-settings';
 $base_path = '../..';
 $activePage = 'settings';
 require_once __DIR__ . '/../../config/database.php';
 
 // Redirect if not logged in
-if (!isset($_SESSION['PersonnelID']) || !isset($_SESSION['PersonnelName'])) {
-    header("Location: $base_path/public/personnel/personnel_login.php");
+if (!isset($_SESSION['DoctorID']) || !isset($_SESSION['DoctorName'])) {
+    header("Location: $base_path/public/doctor/doctor_login.php");
     exit();
 }
 
-$PersonnelID = $_SESSION['PersonnelID'];
+$DoctorID = $_SESSION['DoctorID'];
 
-// Fetch personnel info from database
-$query = "SELECT * FROM personnel WHERE PersonnelID = ?";
+// Fetch doctor info from database
+$query = "SELECT * FROM doctor WHERE DoctorID = ?";
 $stmt = $conn->prepare($query);
-$stmt->bind_param("s", $PersonnelID);
+$stmt->bind_param("s", $DoctorID);
 $stmt->execute();
 $result = $stmt->get_result();
-$personnel = $result->fetch_assoc();
+$doctor = $result->fetch_assoc();
 
 // Default values
-$PersonnelName = $personnel['PersonnelName'] ?? 'Unknown Medical Personnel';
-$personnelPic = !empty($personnel['ProfilePicture']) ? $base_path . '/' . $personnel['ProfilePicture'] : $base_path . '/public/images/default-prof-personnel.png';
+$DoctorName = $doctor['DoctorName'] ?? 'Unknown Doctor';
+$doctorPic = !empty($doctor['ProfilePicture']) ? $base_path . '/' . $doctor['ProfilePicture'] : $base_path . '/public/images/default-prof-doctor.png';
 
-require_once __DIR__ . '/../../templates/partials/personnel_header.php';
+require_once __DIR__ . '/../../templates/partials/doctor_header.php';
 ?>
 
 <main>
@@ -36,10 +36,10 @@ require_once __DIR__ . '/../../templates/partials/personnel_header.php';
     </div>
     <div class="settings-content-wrapper">
         <div class="settings-user-profile">
-            <img src="<?= htmlspecialchars($personnelPic) ?>" alt="User Profile" class="profile-pic">
+            <img src="<?= htmlspecialchars($doctorPic) ?>" alt="User Profile" class="profile-pic">
             <div>
-                <h2 class="user-name"><?= htmlspecialchars($PersonnelName) ?></h2>
-                <p class="personnel-id">Medical Personnel ID: <?= htmlspecialchars($PersonnelID) ?></p>
+                <h2 class="user-name"><?= htmlspecialchars($DoctorName) ?></h2>
+                <p class="doctor-id">Doctor ID: <?= htmlspecialchars($DoctorID) ?></p>
             </div>
         </div>
         <div class="settings-options-list">
@@ -60,6 +60,6 @@ require_once __DIR__ . '/../../templates/partials/personnel_header.php';
 </main>
 
 <?php 
-require_once __DIR__ . '/../../templates/partials/personnel_side_menu.php';
-require_once __DIR__ . '/../../templates/partials/personnel_footer.php'; 
+require_once __DIR__ . '/../../templates/partials/doctor_side_menu.php';
+require_once __DIR__ . '/../../templates/partials/doctor_footer.php'; 
 ?>

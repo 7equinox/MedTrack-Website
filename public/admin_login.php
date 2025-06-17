@@ -38,7 +38,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 
 $pageTitle = 'Admin Login - MedTrack';
-$body_class = 'page-personnel-login'; // Can reuse this class for styling
+$body_class = 'page-doctor-login'; // Can reuse this class for styling
 $base_path = './'; // Set the correct base path
 require_once __DIR__ . '/../templates/partials/header.php';
 ?>

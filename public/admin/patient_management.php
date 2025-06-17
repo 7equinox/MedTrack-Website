@@ -6,7 +6,7 @@ if (!isset($_SESSION['AdminID'])) {
 }
 
 $page_title = 'Patient Management';
-$body_class = 'page-personnel-patient-list'; // Re-use styling
+$body_class = 'page-doctor-patient-list'; // Re-use styling
 $base_path = '../..';
 $activePage = 'patients';
 

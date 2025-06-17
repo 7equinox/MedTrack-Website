@@ -1,11 +1,11 @@
 <?php
 $page_title = 'Edit Patient';
-$body_class = 'page-personnel-patient-edit';
+$body_class = 'page-doctor-patient-edit';
 $base_path = '../..';
 $activePage = 'patient_list';
 
 require_once __DIR__ . '/../../config/database.php';
-require_once __DIR__ . '/../../templates/partials/personnel_header.php';
+require_once __DIR__ . '/../../templates/partials/doctor_header.php';
 
 $patientID = $_GET['id'] ?? '';
 $today = date('Y-m-d');
@@ -111,7 +111,7 @@ if (!$patient) {
           </div>
       </div>
       <div class="form-actions" style="margin-top: 1rem;">
-          <a href="<?= $base_path ?>/public/personnel/patient_list.php" class="btn btn-cancel">Cancel</a>
+          <a href="<?= $base_path ?>/public/doctor/patient_list.php" class="btn btn-cancel">Cancel</a>
           <button type="submit" class="btn btn-save">Save Changes</button>
       </div>
   </form>
@@ -137,6 +137,6 @@ document.addEventListener('DOMContentLoaded', function () {
 </script>
 
 <?php
-require_once __DIR__ . '/../../templates/partials/personnel_side_menu.php';
-require_once __DIR__ . '/../../templates/partials/personnel_footer.php';
+require_once __DIR__ . '/../../templates/partials/doctor_side_menu.php';
+require_once __DIR__ . '/../../templates/partials/doctor_footer.php';
 ?>

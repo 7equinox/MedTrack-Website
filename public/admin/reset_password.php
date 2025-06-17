@@ -58,7 +58,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $show_form) {
 }
 
 $pageTitle = 'Reset Admin Password';
-$body_class = 'page-personnel-login';
+$body_class = 'page-doctor-login';
 $base_path = '..';
 require_once __DIR__ . '/../../templates/partials/header.php';
 ?>

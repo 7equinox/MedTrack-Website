@@ -4,7 +4,7 @@ $body_class = 'page-about-us';
 $base_path = '../..';
 $activePage = 'about';
 require_once __DIR__ . '/../../config/database.php';
-require_once __DIR__ . '/../../templates/partials/personnel_header.php';
+require_once __DIR__ . '/../../templates/partials/doctor_header.php';
 ?>
 
   <main>
@@ -41,6 +41,6 @@ require_once __DIR__ . '/../../templates/partials/personnel_header.php';
   </main>
 
 <?php 
-require_once __DIR__ . '/../../templates/partials/personnel_side_menu.php';
-require_once __DIR__ . '/../../templates/partials/personnel_footer.php'; 
+require_once __DIR__ . '/../../templates/partials/doctor_side_menu.php';
+require_once __DIR__ . '/../../templates/partials/doctor_footer.php'; 
 ?> 

@@ -1,22 +1,15 @@
 <?php
-// A utility script to securely reset a medical personnel member's password.
-// USAGE:
-// 1. Navigate to this script in your browser (e.g., your-site.com/public/scripts/reset_personnel_password.php).
-// 2. Enter the Personnel ID (e.g., MD-0001) and the new password.
-// 3. Click "Reset Password".
-// 4. IMPORTANT: Delete this file from your server immediately after use.
-
-$pageTitle = 'Reset Personnel Password - MedTrack';
+$pageTitle = 'Reset Doctor Password - MedTrack';
 $base_path = '../';
 require_once '../../templates/partials/header.php';
 require_once '../../config/database.php';
 
-$personnel_id = $_GET['id'] ?? '';
+$doctor_id = $_GET['id'] ?? '';
 $update_success = false;
 $error_message = '';
 
-if (empty($personnel_id)) {
-    die("No Personnel ID provided. Please go back to the <a href='../personnel/forgot_password.php'>Forgot Password</a> page.");
+if (empty($doctor_id)) {
+    die("No Doctor ID provided. Please go back to the <a href='../doctor/forgot_password.php'>Forgot Password</a> page.");
 }
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -27,8 +20,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     } else {
         $hashed_password = password_hash($new_password, PASSWORD_DEFAULT);
 
-        $stmt = $conn->prepare("UPDATE personnel SET Password = ? WHERE PersonnelID = ?");
-        $stmt->bind_param("ss", $hashed_password, $personnel_id);
+        $stmt = $conn->prepare("UPDATE doctor SET Password = ? WHERE DoctorID = ?");
+        $stmt->bind_param("ss", $hashed_password, $doctor_id);
 
         if ($stmt->execute()) {
             $update_success = true;
@@ -40,7 +33,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 ?>
 
-<body class="page-personnel-login">
+<body class="page-doctor-login">
     <div class="container">
         <div class="left-panel"></div>
         <div class="right-panel">
@@ -52,7 +45,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 
                 <?php if ($update_success): ?>
                     <div id="success-panel" style="margin-bottom: 1.5rem; padding: 1rem; border-radius: 8px; background-color: #d4edda; color: #155724;">
-                        Password for <strong><?= htmlspecialchars($personnel_id) ?></strong> has been updated successfully.
+                        Password for <strong><?= htmlspecialchars($doctor_id) ?></strong> has been updated successfully.
                         <p style="margin-top: 1rem;">Redirecting to login page...</p>
                     </div>
                     <script>
@@ -62,7 +55,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     </script>
                 <?php else: ?>
                     <p class="instruction" style="margin-bottom: 1rem;">
-                        Create a new password for Personnel ID: <strong><?= htmlspecialchars($personnel_id) ?></strong>
+                        Create a new password for Doctor ID: <strong><?= htmlspecialchars($doctor_id) ?></strong>
                     </p>
 
                     <?php if ($error_message): ?>

@@ -1,31 +1,31 @@
 <?php
 session_start();
-if (!isset($_SESSION['PersonnelID']) || !isset($_SESSION['PersonnelName'])) {
-    header("Location: ../../personnel/personnel_login.php");
+if (!isset($_SESSION['DoctorID']) || !isset($_SESSION['DoctorName'])) {
+    header("Location: ../../doctor/doctor_login.php");
     exit();
 }
-$PersonnelID = $_SESSION['PersonnelID'];
-$PersonnelName = $_SESSION['PersonnelName'];
+$DoctorID = $_SESSION['DoctorID'];
+$DoctorName = $_SESSION['DoctorName'];
 
 require_once __DIR__ . '/../../config/database.php';
 
 $page_title = 'Medication Adherence Reports';
-$body_class = 'page-personnel-report-log';
+$body_class = 'page-doctor-report-log';
 $base_path = '../..';
 $activePage = 'report_log';
-require_once __DIR__ . '/../../templates/partials/personnel_header.php';
+require_once __DIR__ . '/../../templates/partials/doctor_header.php';
 
-// Fetch reports only created by the logged-in personnel that are NOT resolved
+// Fetch reports only created by the logged-in doctor that are NOT resolved
 $reportQuery = "
-    SELECT r.ReportID, r.PatientID, r.PersonnelID, r.ReportDetails, r.ReportStatus, r.ReportDate, p.PatientName
+    SELECT r.ReportID, r.PatientID, r.DoctorID, r.ReportDetails, r.ReportStatus, r.ReportDate, p.PatientName
     FROM reports r
     JOIN patients p ON r.PatientID = p.PatientID
-    WHERE r.PersonnelID = ? AND r.ReportStatus != 'Resolved'
+    WHERE r.DoctorID = ? AND r.ReportStatus != 'Resolved'
     ORDER BY r.ReportDate DESC
 ";
 
 $stmt = $conn->prepare($reportQuery);
-$stmt->bind_param("s", $PersonnelID);
+$stmt->bind_param("s", $DoctorID);
 $stmt->execute();
 $reports = $stmt->get_result();
 ?>
@@ -60,6 +60,6 @@ $reports = $stmt->get_result();
 </main>
 
 <?php 
-require_once __DIR__ . '/../../templates/partials/personnel_side_menu.php';
-require_once __DIR__ . '/../../templates/partials/personnel_footer.php'; 
+require_once __DIR__ . '/../../templates/partials/doctor_side_menu.php';
+require_once __DIR__ . '/../../templates/partials/doctor_footer.php'; 
 ?>

@@ -7,9 +7,9 @@ if (!isset($_SESSION['AdminID'])) {
 
 require_once __DIR__ . '/../../config/database.php';
 
-$personnelID = $_GET['id'] ?? '';
-if (!$personnelID) {
-    die("No Personnel ID provided.");
+$doctorID = $_GET['id'] ?? '';
+if (!$doctorID) {
+    die("No Doctor ID provided.");
 }
 
 $error_message = '';
@@ -17,14 +17,14 @@ $success_message = '';
 
 // Handle form submission
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $personnelName = trim($_POST['PersonnelName']);
+    $doctorName = trim($_POST['DoctorName']);
     $email = trim($_POST['Email']);
     $contactNumber = trim($_POST['ContactNumber']);
     $newPassword = $_POST['Password'];
 
-    $sql = "UPDATE personnel SET PersonnelName=?, Email=?, ContactNumber=? ";
+    $sql = "UPDATE doctor SET DoctorName=?, Email=?, ContactNumber=? ";
     $types = "sss";
-    $params = [$personnelName, $email, $contactNumber];
+    $params = [$doctorName, $email, $contactNumber];
 
     if (!empty($newPassword)) {
         $sql .= ", Password=? ";
@@ -32,41 +32,41 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $params[] = password_hash($newPassword, PASSWORD_DEFAULT);
     }
 
-    $sql .= "WHERE PersonnelID=?";
+    $sql .= "WHERE DoctorID=?";
     $types .= "s";
-    $params[] = $personnelID;
+    $params[] = $doctorID;
 
     $stmt = $conn->prepare($sql);
     $stmt->bind_param($types, ...$params);
 
     if ($stmt->execute()) {
-        $success_message = "Personnel details updated successfully!";
+        $success_message = "Doctor details updated successfully!";
     } else {
         $error_message = "Database error: " . htmlspecialchars($stmt->error);
     }
     $stmt->close();
 }
 
-// Fetch current personnel data
-$stmt = $conn->prepare("SELECT PersonnelName, Email, ContactNumber FROM personnel WHERE PersonnelID = ?");
-$stmt->bind_param("s", $personnelID);
+// Fetch current doctor data
+$stmt = $conn->prepare("SELECT DoctorName, Email, ContactNumber FROM doctor WHERE DoctorID = ?");
+$stmt->bind_param("s", $doctorID);
 $stmt->execute();
-$personnel = $stmt->get_result()->fetch_assoc();
+$doctor = $stmt->get_result()->fetch_assoc();
 $stmt->close();
 
-if (!$personnel) {
-    die("Personnel not found.");
+if (!$doctor) {
+    die("Doctor not found.");
 }
 
-$page_title = 'Edit Personnel';
-$body_class = 'page-personnel-patient-edit';
+$page_title = 'Edit Doctor';
+$body_class = 'page-doctor-patient-edit';
 $base_path = '../..';
-$activePage = 'personnel';
+$activePage = 'doctor';
 require_once __DIR__ . '/../../templates/partials/admin_header.php';
 ?>
 
 <main>
-    <h1 class="page-title" style="text-align: center; margin-bottom: 2rem;">Edit Personnel: <?= htmlspecialchars($personnelID) ?></h1>
+    <h1 class="page-title" style="text-align: center; margin-bottom: 2rem;">Edit Doctor: <?= htmlspecialchars($doctorID) ?></h1>
 
     <?php if ($success_message): ?>
         <div class="alert success" style="max-width: 900px; margin: 0 auto 1.5rem auto;"><?= $success_message ?></div>
@@ -78,20 +78,20 @@ require_once __DIR__ . '/../../templates/partials/admin_header.php';
     <form method="POST" class="add-med-form" style="display: block; max-width: 900px; margin: auto;">
         <div class="form-grid">
             <div class="form-group">
-                <label for="PersonnelID">Personnel ID</label>
-                <input type="text" value="<?= htmlspecialchars($personnelID) ?>" disabled>
+                <label for="DoctorID">Doctor ID</label>
+                <input type="text" value="<?= htmlspecialchars($doctorID) ?>" disabled>
             </div>
             <div class="form-group">
-                <label for="PersonnelName">Full Name</label>
-                <input type="text" id="PersonnelName" name="PersonnelName" value="<?= htmlspecialchars($personnel['PersonnelName']) ?>" required>
+                <label for="DoctorName">Full Name</label>
+                <input type="text" id="DoctorName" name="DoctorName" value="<?= htmlspecialchars($doctor['DoctorName']) ?>" required>
             </div>
             <div class="form-group col-span-2">
                 <label for="Email">Email Address</label>
-                <input type="email" id="Email" name="Email" value="<?= htmlspecialchars($personnel['Email']) ?>" required>
+                <input type="email" id="Email" name="Email" value="<?= htmlspecialchars($doctor['Email']) ?>" required>
             </div>
             <div class="form-group">
                 <label for="ContactNumber">Contact Number</label>
-                <input type="text" id="ContactNumber" name="ContactNumber" value="<?= htmlspecialchars($personnel['ContactNumber']) ?>">
+                <input type="text" id="ContactNumber" name="ContactNumber" value="<?= htmlspecialchars($doctor['ContactNumber']) ?>">
             </div>
             <div class="form-group">
                 <label for="Password">New Password</label>
@@ -99,7 +99,7 @@ require_once __DIR__ . '/../../templates/partials/admin_header.php';
             </div>
         </div>
         <div class="form-actions" style="margin-top: 1rem;">
-            <a href="personnel_management.php" class="btn btn-cancel">Back to List</a>
+            <a href="doctor_management.php" class="btn btn-cancel">Back to List</a>
             <button type="submit" class="btn btn-save">Save Changes</button>
         </div>
     </form>

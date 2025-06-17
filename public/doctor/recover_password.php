@@ -4,31 +4,31 @@ $base_path = '../';
 require_once '../../templates/partials/header.php';
 require_once '../../config/database.php';
 
-$personnel_id = $_GET['id'] ?? '';
+$doctor_id = $_GET['id'] ?? '';
 
-if (empty($personnel_id)) {
+if (empty($doctor_id)) {
     header("Location: forgot_password.php?error=No ID provided.");
     exit();
 }
 
-// Check if personnel ID exists
-$stmt = $conn->prepare("SELECT Email FROM personnel WHERE PersonnelID = ?");
-$stmt->bind_param("s", $personnel_id);
+// Check if doctor ID exists
+$stmt = $conn->prepare("SELECT Email FROM doctor WHERE DoctorID = ?");
+$stmt->bind_param("s", $doctor_id);
 $stmt->execute();
 $result = $stmt->get_result();
 if ($result->num_rows === 0) {
-    header("Location: forgot_password.php?error=Personnel ID not found.");
+    header("Location: forgot_password.php?error=Doctor ID not found.");
     exit();
 }
-$personnel = $result->fetch_assoc();
-$email = $personnel['Email'];
+$doctor = $result->fetch_assoc();
+$email = $doctor['Email'];
 // Mask the email for display, e.g., show first 3 and last 4 chars
 $email_parts = explode('@', $email);
 $masked_email = substr($email_parts[0], 0, 3) . '...' . '@' . $email_parts[1];
 
 ?>
 
-<body class="page-personnel-login">
+<body class="page-doctor-login">
     <div class="container">
         <div class="left-panel"></div>
         <div class="right-panel">
@@ -42,8 +42,8 @@ $masked_email = substr($email_parts[0], 0, 3) . '...' . '@' . $email_parts[1];
                     <br><br><strong>You may enter any code below to proceed.</strong>
                 </p>
 
-                <form action="../scripts/reset_personnel_password.php" method="GET">
-                    <input type="hidden" name="id" value="<?= htmlspecialchars($personnel_id) ?>">
+                <form action="../scripts/reset_doctor_password.php" method="GET">
+                    <input type="hidden" name="id" value="<?= htmlspecialchars($doctor_id) ?>">
                     <div class="form-group" style="text-align: left;">
                         <label for="recovery_code">Recovery Code</label>
                         <input type="text" id="recovery_code" name="code" required placeholder="Enter any code">
