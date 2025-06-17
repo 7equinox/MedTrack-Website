@@ -45,6 +45,9 @@ body, html {
   background-image: url('../images/handshake.jpg');
 }
 
+.page-admin-login .left-panel {
+  background-image: url('../images/medicine.jpg');
+}
 
 .right-panel {
   flex: 1;
@@ -200,6 +203,10 @@ background-color: #2c3e50;
 
 .btn-personnel {
   background-color: #34495e;
+}
+
+.btn-admin {
+  background-color: #c0392b;
 }
 
 .terms {
@@ -3350,5 +3357,132 @@ input[type="password"] {
 
     .page-personnel-archive .archive-title {
         font-size: 1.8rem;
+    }
+}
+
+/* =============================================== */
+/* ============== ADMIN AREA STYLES ============== */
+/* =============================================== */
+
+.page-admin-area .side-menu {
+  display: flex;
+  flex-direction: column;
+}
+
+.page-admin-area .side-menu-content {
+    flex-grow: 1;
+}
+
+.page-admin-area .logout-button-container {
+  margin-top: auto;
+  padding-top: 1rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.page-admin-area .side-menu-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.page-admin-area .side-menu-header .logo img {
+  height: 40px;
+}
+
+.page-admin-area .side-menu-close {
+  background: none;
+  border: none;
+  color: white;
+  font-size: 1.5rem;
+  cursor: pointer;
+}
+
+.page-admin-area .profile-header {
+  padding: 1rem 0;
+}
+
+.page-admin-area .profile-label .profile-name {
+  font-size: 1.15rem;
+  font-weight: 600;
+  color: white;
+}
+
+.page-admin-area .profile-label .profile-id {
+  font-size: 0.9rem;
+  color: #d1eaff;
+  font-weight: 400;
+}
+
+/* Admin Dashboard Specific */
+.admin-dashboard-main {
+    max-width: 900px;
+    margin: 2rem auto;
+    padding: 2rem;
+    background-color: #f0f9ff;
+    border-radius: 8px;
+}
+.admin-dashboard-main .dashboard-header h1 {
+    font-size: 2.5rem;
+    color: #2c3e50;
+    margin-bottom: 0.5rem;
+}
+.admin-dashboard-main .dashboard-header p {
+    font-size: 1.1rem;
+    color: #555;
+    margin-bottom: 2rem;
+}
+.admin-dashboard-main .management-links {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+.admin-dashboard-main .management-link {
+    display: block;
+    padding: 2.5rem;
+    text-decoration: none;
+    color: white;
+    font-size: 1.5rem;
+    font-weight: 600;
+    border-radius: 8px;
+    text-align: center;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+.admin-dashboard-main .management-link:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+}
+.admin-dashboard-main .link-personnel {
+    background-color: #57b894;
+}
+.admin-dashboard-main .link-patients {
+    background-color: #007bff;
+}
+
+/* --- Admin Management Table --- */
+.page-personnel-patient-list .table-wrapper {
+    overflow-x: auto;
+}
+
+.page-personnel-patient-list .action-cell .btn {
+    padding: 4px 8px; /* minimized padding */
+    display: inline-flex; /* for centering */
+    align-items: center;
+    justify-content: center;
+    min-width: 60px; /* give some base width */
+}
+
+.page-personnel-patient-list .action-cell .btn-archive {
+    min-width: 35px; /* less width for icon only button */
+}
+
+@media (max-width: 768px) {
+    .page-personnel-patient-list .table-wrapper {
+        border: 1px solid #ddd;
+        border-radius: 8px;
+    }
+    .page-personnel-patient-list table {
+        min-width: 600px; /* force scroll */
     }
 }

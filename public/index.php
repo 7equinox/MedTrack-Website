@@ -20,6 +20,7 @@ require_once '../templates/partials/header.php';
         <div class="buttons">
           <a href="patient_login.php" class="btn btn-patient">Patient</a>
           <a href="personnel_login.php" class="btn btn-personnel">Medical Personnel</a>
+          <a href="admin_login.php" class="btn btn-admin">Administrator</a>
         </div>
         <p class="terms">
           By using this service, you understood and agree to MedTrack's
