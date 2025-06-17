@@ -1,4 +1,25 @@
 <?php
+
+// --- MedTrack DB Auto-Setup ---
+$host = 'localhost';
+$username = 'root';
+$password = '';
+
+// Establish connection to MySQL server
+$conn_setup = new mysqli($host, $username, $password);
+
+if ($conn_setup->connect_error) {
+    die("MySQL connection for setup failed: " . $conn_setup->connect_error);
+}
+
+// Include the setup script and run it
+require_once __DIR__ . '/../config/setup.php';
+setupDatabase($conn_setup);
+
+// Close the setup connection
+$conn_setup->close();
+// --- End of Auto-Setup ---
+
 $pageTitle = 'Landing Page - MedTrack';
 $base_path = './';
 require_once '../templates/partials/header.php';
