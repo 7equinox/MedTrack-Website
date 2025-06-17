@@ -90,7 +90,7 @@ require_once __DIR__ . '/../../templates/partials/header.php';
                             <input type="password" id="password_confirm" name="password_confirm" required>
                         </div>
                         <div class="button-container">
-                            <button type="submit" class="btn">Reset Password</button>
+                            <button type="submit" class="btn-admin-forgot-password">Reset Password</button>
                         </div>
                     </form>
                 <?php endif; ?>

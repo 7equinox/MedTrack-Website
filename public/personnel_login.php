@@ -118,7 +118,7 @@ require_once '../templates/partials/header.php';
           </div>
 
           <div class="options">
-            <a href="#">Forgot Password</a>
+            <a href="./personnel/forgot_password.php">Forgot Password?</a>
           </div>
 
           <div class="checkbox-group">

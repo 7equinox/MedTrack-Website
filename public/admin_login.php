@@ -71,7 +71,7 @@ require_once __DIR__ . '/../templates/partials/header.php';
                             <span class="toggle-icon"></span>
                         </div>
                     </div>
-                    <div class="options" style="text-align: right; margin-top: -10px; margin-bottom: 20px;">
+                    <div class="options">
                         <a href="admin/forgot_password.php">Forgot Password?</a>
                     </div>
                     <div class="button-container">

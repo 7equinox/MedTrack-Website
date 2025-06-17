@@ -1,95 +1,98 @@
 <?php
-require_once __DIR__ . '/../../config/database.php';
+$pageTitle = 'Reset Admin Password - MedTrack';
+$base_path = '../';
+require_once '../../templates/partials/header.php';
+require_once '../../config/database.php';
 
-$message = '';
-$message_type = '';
+$admin_id = $_GET['id'] ?? '';
+$update_success = false;
+$error_message = '';
+
+if (empty($admin_id)) {
+    die("No Admin ID provided. Please go back to the <a href='../admin/forgot_password.php'>Forgot Password</a> page.");
+}
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $adminId = trim($_POST['admin_id']);
-    $newPassword = $_POST['new_password'];
-    $isHashed = isset($_POST['is_hashed']);
+    $new_password = $_POST['new_password'];
 
-    if (empty($adminId) || empty($newPassword)) {
-        $message = "Admin ID and New Password are required.";
-        $message_type = 'error';
+    if (strlen($new_password) < 8) {
+        $error_message = "Password must be at least 8 characters long.";
     } else {
-        // Check if admin exists
-        $check = $conn->prepare("SELECT 1 FROM admins WHERE AdminID = ?");
-        $check->bind_param("s", $adminId);
-        $check->execute();
-        $result = $check->get_result();
+        $hashed_password = password_hash($new_password, PASSWORD_DEFAULT);
 
-        if ($result->num_rows === 0) {
-            $message = "Admin with ID '$adminId' not found.";
-            $message_type = 'error';
+        $stmt = $conn->prepare("UPDATE admins SET Password = ? WHERE AdminID = ?");
+        $stmt->bind_param("ss", $hashed_password, $admin_id);
+
+        if ($stmt->execute()) {
+            $update_success = true;
         } else {
-            $passwordToSave = $isHashed ? $newPassword : password_hash($newPassword, PASSWORD_DEFAULT);
-
-            $stmt = $conn->prepare("UPDATE admins SET Password = ? WHERE AdminID = ?");
-            $stmt->bind_param("ss", $passwordToSave, $adminId);
-
-            if ($stmt->execute()) {
-                $message = "Password for Admin ID '$adminId' has been updated successfully.";
-                $message_type = 'success';
-            } else {
-                $message = "Failed to update password: " . htmlspecialchars($stmt->error);
-                $message_type = 'error';
-            }
-            $stmt->close();
+            $error_message = "Failed to update password. Please try again.";
         }
-        $check->close();
+        $stmt->close();
     }
 }
 ?>
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Password Reset Utility</title>
-    <style>
-        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; background-color: #f4f7f6; color: #333; line-height: 1.6; padding: 20px; }
-        .container { max-width: 500px; margin: 50px auto; background: #fff; padding: 30px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
-        h1 { text-align: center; color: #2c3e50; }
-        .form-group { margin-bottom: 20px; }
-        label { display: block; margin-bottom: 8px; font-weight: 500; }
-        input[type="text"], input[type="password"] { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
-        .checkbox-group { display: flex; align-items: center; }
-        .checkbox-group input { margin-right: 10px; }
-        .btn { display: block; width: 100%; background-color: #3498db; color: white; padding: 12px; border: none; border-radius: 4px; cursor: pointer; font-size: 1rem; font-weight: 600; text-align: center; }
-        .btn:hover { background-color: #2980b9; }
-        .message { padding: 15px; border-radius: 5px; margin-bottom: 20px; text-align: center; }
-        .message.success { background-color: #d4edda; color: #155724; }
-        .message.error { background-color: #f8d7da; color: #721c24; }
-        .note { font-size: 0.9rem; color: #666; background: #ecf0f1; padding: 10px; border-radius: 4px; margin-top: 15px; }
-    </style>
-</head>
-<body>
+
+<body class="page-admin-login">
     <div class="container">
-        <h1>Admin Password Reset Utility</h1>
-        <?php if ($message): ?>
-            <div class="message <?= $message_type; ?>"><?= $message; ?></div>
-        <?php endif; ?>
-        <form action="" method="POST">
-            <div class="form-group">
-                <label for="admin_id">Admin ID</label>
-                <input type="text" id="admin_id" name="admin_id" required>
+        <div class="left-panel"></div>
+        <div class="right-panel">
+            <div class="content" style="max-width: 400px; text-align: center;">
+                <div class="logo">
+                    <a href="../index.php"><img src="<?= $base_path ?>images/logo.png" alt="MedTrack Logo"></a>
+                </div>
+                <h2>Reset Admin Password</h2>
+                
+                <?php if ($update_success): ?>
+                    <div id="success-panel" style="margin-bottom: 1.5rem; padding: 1rem; border-radius: 8px; background-color: #d4edda; color: #155724;">
+                        Password for <strong><?= htmlspecialchars($admin_id) ?></strong> has been updated successfully.
+                        <p style="margin-top: 1rem;">Redirecting to login page...</p>
+                    </div>
+                    <script>
+                        setTimeout(function() {
+                            window.location.href = '../index.php';
+                        }, 3000);
+                    </script>
+                <?php else: ?>
+                    <p class="instruction" style="margin-bottom: 1rem;">
+                        Create a new password for Admin ID: <strong><?= htmlspecialchars($admin_id) ?></strong>
+                    </p>
+
+                    <?php if ($error_message): ?>
+                        <div class="message error" style="margin-bottom: 1rem;"><?= htmlspecialchars($error_message) ?></div>
+                    <?php endif; ?>
+
+                    <form method="POST" action="">
+                        <div class="form-group" style="text-align: left;">
+                            <label for="new_password">New Password</label>
+                            <input type="password" id="new_password" name="new_password" required minlength="8">
+                        </div>
+                        <div class="form-group" style="text-align: left;">
+                            <label for="confirm_password">Confirm New Password</label>
+                            <input type="password" id="confirm_password" name="confirm_password" required>
+                        </div>
+                        <div class="button-container">
+                            <button type="submit" class="btn-admin-forgot-password">Save New Password</button>
+                        </div>
+                    </form>
+                    <script>
+                        const password = document.getElementById("new_password");
+                        const confirm_password = document.getElementById("confirm_password");
+
+                        function validatePassword(){
+                          if(password.value != confirm_password.value) {
+                            confirm_password.setCustomValidity("Passwords Don't Match");
+                          } else {
+                            confirm_password.setCustomValidity('');
+                          }
+                        }
+                        password.onchange = validatePassword;
+                        confirm_password.onkeyup = validatePassword;
+                    </script>
+                <?php endif; ?>
+
             </div>
-            <div class="form-group">
-                <label for="new_password">New Password / Password Hash</label>
-                <input type="password" id="new_password" name="new_password" required>
-            </div>
-            <div class="form-group checkbox-group">
-                <input type="checkbox" id="is_hashed" name="is_hashed" value="1">
-                <label for="is_hashed">The value above is a pre-computed hash</label>
-            </div>
-            <div class="form-group">
-                <button type="submit" class="btn">Update Password</button>
-            </div>
-            <div class="note">
-                <strong>Note:</strong> If the checkbox is ticked, the value will be saved directly. Otherwise, it will be securely hashed before being saved.
-            </div>
-        </form>
+        </div>
     </div>
 </body>
 </html> 

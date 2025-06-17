@@ -48,38 +48,43 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
-$pageTitle = 'Admin Forgot Password';
-$body_class = 'page-personnel-login';
-$base_path = '..';
-require_once __DIR__ . '/../../templates/partials/header.php';
+$pageTitle = 'Forgot Password - MedTrack';
+$base_path = '../';
+require_once '../../templates/partials/header.php';
 ?>
 
-<body class="<?= $body_class; ?>">
+<body class="page-admin-login">
     <div class="container">
-        <div class="left-panel"></div>
+        <div class="left-panel">
+            <!-- Background image is set in CSS -->
+        </div>
         <div class="right-panel">
-            <a href="../admin_login.php" class="back-button">&larr; Back to Login</a>
-            <div class="content">
-                <h2>Reset Admin Password</h2>
-                <p class="instruction">Enter your Admin ID. A reset link will be sent to the email address associated with your account.</p>
+            <div class="content" style="max-width: 400px; text-align: center;">
+                <div class="logo">
+                    <a href="../index.php"><img src="<?= $base_path ?>images/logo.png" alt="MedTrack Logo"></a>
+                </div>
+                <h2>Forgot Password</h2>
+                <p class="instruction" style="margin-bottom: 1.5rem;">Enter your Admin ID to receive a password reset code.</p>
                 
-                <?php if ($message): ?>
-                    <div class="message <?= $message_type === 'success' ? 'success' : 'error' ?>" style="text-align: left; padding: 1rem; border-radius: 8px; margin-top: 1.5rem; background-color: <?= $message_type === 'success' ? '#d4edda' : '#f8d7da' ?>; color: <?= $message_type === 'success' ? '#155724' : '#721c24' ?>;">
-                        <?= $message; // Unescaped to allow the link to be clickable ?>
-                    </div>
+                <?php if (isset($_GET['error'])): ?>
+                    <div class="message error" style="margin-bottom: 1rem;"><?= htmlspecialchars($_GET['error']) ?></div>
                 <?php endif; ?>
 
-                <form method="POST">
-                    <div class="form-group">
+                <form action="recover_password.php" method="GET">
+                    <div class="form-group" style="text-align: left;">
                         <label for="admin_id">Admin ID</label>
-                        <input type="text" id="admin_id" name="admin_id" required>
+                        <input type="text" id="admin_id" name="id" required placeholder="e.g., AD-001">
                     </div>
                     <div class="button-container">
-                        <button type="submit" class="btn">Send Reset Link</button>
+                        <button type="submit" class="btn-admin-forgot-password">Send Recovery Code</button>
                     </div>
                 </form>
+                <div class="options" style="text-align: center; margin-top: 1.5rem;">
+                    <a href="../admin_login.php">← Back to Login</a>
+                </div>
             </div>
         </div>
     </div>
 </body>
+
 </html> 

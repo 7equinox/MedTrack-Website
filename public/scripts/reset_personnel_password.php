@@ -6,94 +6,100 @@
 // 3. Click "Reset Password".
 // 4. IMPORTANT: Delete this file from your server immediately after use.
 
+$pageTitle = 'Reset Personnel Password - MedTrack';
+$base_path = '../';
+require_once '../../templates/partials/header.php';
 require_once '../../config/database.php';
 
-$message = '';
-$message_type = '';
+$personnel_id = $_GET['id'] ?? '';
+$update_success = false;
+$error_message = '';
+
+if (empty($personnel_id)) {
+    die("No Personnel ID provided. Please go back to the <a href='../personnel/forgot_password.php'>Forgot Password</a> page.");
+}
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $personnelID = trim($_POST['personnel_id']);
-    $newPassword = $_POST['new_password'];
+    $new_password = $_POST['new_password'];
 
-    if (empty($personnelID) || empty($newPassword)) {
-        $message = "Personnel ID and new password cannot be empty.";
-        $message_type = 'error';
+    if (strlen($new_password) < 8) {
+        $error_message = "Password must be at least 8 characters long.";
     } else {
-        $isAlreadyHashed = isset($_POST['is_hashed']);
+        $hashed_password = password_hash($new_password, PASSWORD_DEFAULT);
 
-        // If the input is not already a hash, hash it securely.
-        // Otherwise, use the provided value as is.
-        $passwordToStore = $isAlreadyHashed ? $newPassword : password_hash($newPassword, PASSWORD_DEFAULT);
-
-        // Update the password in the database
         $stmt = $conn->prepare("UPDATE personnel SET Password = ? WHERE PersonnelID = ?");
-        $stmt->bind_param("ss", $passwordToStore, $personnelID);
+        $stmt->bind_param("ss", $hashed_password, $personnel_id);
 
         if ($stmt->execute()) {
-            if ($stmt->affected_rows > 0) {
-                $message = "Password for Personnel ID '" . htmlspecialchars($personnelID) . "' has been successfully reset.";
-                $message_type = 'success';
-            } else {
-                $message = "No medical personnel found with Personnel ID '" . htmlspecialchars($personnelID) . "'. No changes were made.";
-                $message_type = 'error';
-            }
+            $update_success = true;
         } else {
-            $message = "Error updating password: " . htmlspecialchars($stmt->error);
-            $message_type = 'error';
+            $error_message = "Failed to update password. Please try again.";
         }
         $stmt->close();
     }
 }
 ?>
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Medical Personnel Password Reset Utility</title>
-    <style>
-        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background: #f5f7fa; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; }
-        .container { max-width: 450px; width: 100%; margin: auto; background: #fff; padding: 2.5rem; border-radius: 12px; box-shadow: 0 8px 30px rgba(0,0,0,0.07); }
-        h1 { color: #333; text-align: center; margin-top: 0; margin-bottom: 1rem; font-weight: 600; }
-        .warning { background: #fff3cd; color: #856404; padding: 1rem; border: 1px solid #ffeeba; border-radius: 8px; margin-bottom: 1.5rem; text-align: center; font-size: 0.9rem; }
-        .form-group { margin-bottom: 1.25rem; }
-        label { display: block; margin-bottom: 8px; font-weight: 500; color: #555; }
-        input { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; font-size: 1rem; }
-        input:focus { outline: none; border-color: #007bff; box-shadow: 0 0 0 2px rgba(0,123,255,0.2); }
-        button { width: 100%; padding: 14px; background: #dc3545; color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 1.1rem; font-weight: 600; transition: background-color 0.2s; }
-        button:hover { background: #c82333; }
-        .message { padding: 1rem; border-radius: 8px; margin-top: 1.5rem; text-align: center; }
-        .success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
-        .error { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
-    </style>
-</head>
-<body>
+
+<body class="page-personnel-login">
     <div class="container">
-        <h1>Medical Personnel Password Reset</h1>
-        <div class="warning">
-            <strong>Warning:</strong> This is a powerful tool. Please delete this file from your server immediately after you are finished using it.
+        <div class="left-panel"></div>
+        <div class="right-panel">
+            <div class="content" style="max-width: 400px; text-align: center;">
+                <div class="logo">
+                    <a href="../index.php"><img src="<?= $base_path ?>images/logo.png" alt="MedTrack Logo"></a>
+                </div>
+                <h2>Reset Password</h2>
+                
+                <?php if ($update_success): ?>
+                    <div id="success-panel" style="margin-bottom: 1.5rem; padding: 1rem; border-radius: 8px; background-color: #d4edda; color: #155724;">
+                        Password for <strong><?= htmlspecialchars($personnel_id) ?></strong> has been updated successfully.
+                        <p style="margin-top: 1rem;">Redirecting to login page...</p>
+                    </div>
+                    <script>
+                        setTimeout(function() {
+                            window.location.href = '../index.php';
+                        }, 3000);
+                    </script>
+                <?php else: ?>
+                    <p class="instruction" style="margin-bottom: 1rem;">
+                        Create a new password for Personnel ID: <strong><?= htmlspecialchars($personnel_id) ?></strong>
+                    </p>
+
+                    <?php if ($error_message): ?>
+                        <div class="message error" style="margin-bottom: 1rem;"><?= htmlspecialchars($error_message) ?></div>
+                    <?php endif; ?>
+
+                    <form method="POST" action="">
+                        <div class="form-group" style="text-align: left;">
+                            <label for="new_password">New Password</label>
+                            <input type="password" id="new_password" name="new_password" required minlength="8">
+                        </div>
+                        <div class="form-group" style="text-align: left;">
+                            <label for="confirm_password">Confirm New Password</label>
+                            <input type="password" id="confirm_password" name="confirm_password" required>
+                        </div>
+                        <div class="button-container">
+                            <button type="submit" class="btn">Save New Password</button>
+                        </div>
+                    </form>
+                    <script>
+                        const password = document.getElementById("new_password");
+                        const confirm_password = document.getElementById("confirm_password");
+
+                        function validatePassword(){
+                          if(password.value != confirm_password.value) {
+                            confirm_password.setCustomValidity("Passwords Don't Match");
+                          } else {
+                            confirm_password.setCustomValidity('');
+                          }
+                        }
+                        password.onchange = validatePassword;
+                        confirm_password.onkeyup = validatePassword;
+                    </script>
+                <?php endif; ?>
+
+            </div>
         </div>
-
-        <?php if ($message): ?>
-            <div class="message <?= htmlspecialchars($message_type); ?>">
-                <?= $message; ?>
-            </div>
-        <?php endif; ?>
-
-        <form method="POST" action="">
-            <div class="form-group">
-                <label for="personnel_id">Personnel ID</label>
-                <input type="text" id="personnel_id" name="personnel_id" required placeholder="e.g., MP-0001">
-            </div>
-            <div class="form-group">
-                <label for="new_password">New Password (or Hash)</label>
-                <input type="password" id="new_password" name="new_password" required>
-            </div>
-            <div class="form-group" style="display: flex; align-items: center; gap: 10px;">
-                <input type="checkbox" id="is_hashed" name="is_hashed" value="1" style="width: auto;">
-                <label for="is_hashed" style="margin-bottom: 0; font-weight: normal;">The value provided is already a hash</label>
-            </div>
-            <button type="submit">Reset Password</button>
-        </form>
     </div>
 </body>
 </html>
