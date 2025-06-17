@@ -584,29 +584,6 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // 5. Personnel Dashboard: Real-time search for medication table
-    const dashboardSearchInput = document.getElementById('dashboard-search-input');
-    if (dashboardSearchInput) {
-        const patientListBody = document.getElementById('patient-list-body');
-
-        dashboardSearchInput.addEventListener('input', function() {
-            const searchTerm = this.value.toLowerCase();
-            const rows = patientListBody.getElementsByTagName('tr');
-
-            for (const row of rows) {
-                // Ensure we don't hide form rows if they exist
-                if (row.classList.contains('new-med-row')) continue;
-
-                const rowText = row.textContent.toLowerCase();
-                if (rowText.includes(searchTerm)) {
-                    row.style.display = '';
-                } else {
-                    row.style.display = 'none';
-                }
-            }
-        });
-    }
-
     // 6. Add Medication Form Toggle
     const toggleButton = document.getElementById('toggle-med-form');
     const medForm = document.getElementById('medication-form');
@@ -621,6 +598,66 @@ document.addEventListener('DOMContentLoaded', function() {
         cancelButton.addEventListener('click', function() {
             medForm.classList.add('hidden');
             toggleButton.classList.remove('hidden');
+        });
+    }
+
+    // 7. Live Search for Personnel Dashboard
+    const searchInput = document.getElementById('dashboard-search-input');
+    const tableBody = document.getElementById('patient-list-body');
+    const paginationContainer = document.getElementById('pagination-container');
+    const patientListContainer = document.querySelector('.patient-list-container');
+    let debounceTimer;
+
+    const performSearch = (searchTerm, page = 1) => {
+        const url = `live_search.php?search=${encodeURIComponent(searchTerm)}&page=${page}`;
+        
+        if(tableBody) tableBody.style.opacity = '0.5';
+
+        fetch(url)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (tableBody) {
+                    tableBody.innerHTML = data.tableBody;
+                    tableBody.style.opacity = '1';
+                }
+                if (paginationContainer) {
+                    paginationContainer.innerHTML = data.pagination;
+                }
+            })
+            .catch(error => {
+                console.error('Error fetching search results:', error);
+                if(tableBody) {
+                    tableBody.innerHTML = '<tr><td colspan="10">Error loading data. Please try again.</td></tr>';
+                    tableBody.style.opacity = '1';
+                }
+            });
+    };
+
+    if (searchInput) {
+        searchInput.addEventListener('input', (e) => {
+            clearTimeout(debounceTimer);
+            debounceTimer = setTimeout(() => {
+                performSearch(e.target.value, 1);
+            }, 500);
+        });
+    }
+
+    if (patientListContainer) {
+        patientListContainer.addEventListener('click', (e) => {
+            if (e.target.matches('.pagination-container a.btn-page')) {
+                e.preventDefault();
+                const link = e.target;
+                if (!link.classList.contains('disabled') && !link.classList.contains('active')) {
+                    const page = link.dataset.page;
+                    const searchTerm = searchInput ? searchInput.value : '';
+                    performSearch(searchTerm, page);
+                }
+            }
         });
     }
 }); 

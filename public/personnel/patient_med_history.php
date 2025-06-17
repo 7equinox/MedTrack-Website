@@ -38,11 +38,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $scheduleID = $_POST['ScheduleID'];
     $medName = $_POST['MedicationName'];
     $dosage = $_POST['Dosage'];
+    $medicationFor = $_POST['MedicationFor'];
     $intakeTime = date('Y-m-d H:i:00', strtotime($_POST['IntakeTime']));
     $status = $_POST['Status'];
 
-    $update = $conn->prepare("UPDATE medicationschedule SET MedicationName=?, Dosage=?, IntakeTime=?, Status=? WHERE ScheduleID=? AND PatientID=?");
-    $update->bind_param("ssssis", $medName, $dosage, $intakeTime, $status, $scheduleID, $patientID);
+    $update = $conn->prepare("UPDATE medicationschedule SET MedicationName=?, Dosage=?, MedicationFor=?, IntakeTime=?, Status=? WHERE ScheduleID=? AND PatientID=?");
+    $update->bind_param("sssssis", $medName, $dosage, $medicationFor, $intakeTime, $status, $scheduleID, $patientID);
     $update->execute();
     $update->close();
     header("Location: patient_med_history.php?id=" . urlencode($patientID) . "&update_success=1");
@@ -67,7 +68,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
   <div class="history-list">
     <?php
-    $query = "SELECT ScheduleID, MedicationName, IntakeTime, Dosage, Status FROM medicationschedule WHERE PatientID = ? AND Status IN ('Taken', 'Missed', 'Upcoming') ORDER BY IntakeTime DESC";
+    $query = "
+        SELECT 
+            ScheduleID, MedicationName, IntakeTime, Dosage, MedicationFor, Frequency, Duration, DurationUnit, Status,
+            ROW_NUMBER() OVER (PARTITION BY PrescriptionGUID ORDER BY IntakeTime ASC) as DoseNumber,
+            (Frequency * (CASE WHEN DurationUnit = 'weeks' THEN Duration * 7 ELSE Duration END)) as TotalDoses
+        FROM medicationschedule 
+        WHERE PatientID = ? AND Status IN ('Taken', 'Missed', 'Upcoming') 
+        ORDER BY IntakeTime DESC
+    ";
     $stmt = $conn->prepare($query);
     if ($stmt) {
         $stmt->bind_param("s", $patientID);
@@ -79,6 +88,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $original_med_name = htmlspecialchars($row['MedicationName']);
                 $original_intake_time = htmlspecialchars(date('Y-m-d\TH:i:s', strtotime($row['IntakeTime'])));
                 $original_dosage = htmlspecialchars($row['Dosage']);
+                $original_med_for = htmlspecialchars($row['MedicationFor']);
+                $original_frequency = htmlspecialchars($row['Frequency'] ?? '');
+                $original_duration = htmlspecialchars($row['Duration'] ?? '');
+                $original_duration_unit = htmlspecialchars($row['DurationUnit'] ?? '');
+                $original_dose_number = htmlspecialchars($row['DoseNumber']);
+                $total_doses = htmlspecialchars($row['TotalDoses']);
                 $original_status = htmlspecialchars($row['Status']);
 
                 echo '<form method="POST" class="history-card edit-row">';
@@ -90,13 +105,35 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 echo '</div>';
 
                 echo '<div class="field-group">';
-                echo '<label>Intake Time</label>';
-                echo '<input type="datetime-local" name="IntakeTime" value="' . $original_intake_time . '" data-original-value="' . $original_intake_time . '">';
+                echo '<label>Dosage</label>';
+                echo '<input type="text" name="Dosage" value="' . $original_dosage . '" data-original-value="' . $original_dosage . '">';
                 echo '</div>';
 
                 echo '<div class="field-group">';
-                echo '<label>Dosage</label>';
-                echo '<input type="text" name="Dosage" value="' . $original_dosage . '" data-original-value="' . $original_dosage . '">';
+                echo '<label>For</label>';
+                echo '<input type="text" name="MedicationFor" value="' . $original_med_for . '" data-original-value="' . $original_med_for . '">';
+                echo '</div>';
+
+                echo '<div class="field-group">';
+                echo '<label>Dose No.</label>';
+                echo '<input type="text" value="' . $original_dose_number . ' / ' . $total_doses . '" readonly>';
+                echo '</div>';
+
+                echo '<div class="field-group">';
+                echo '<label>Frequency</label>';
+                echo '<input type="text" value="' . $original_frequency . 'x per day" readonly>';
+                echo '</div>';
+
+                echo '<div class="field-group">';
+                echo '<label>Duration</label>';
+                $unit = $original_duration_unit;
+                $displayUnit = ($unit === 'weeks') ? 'week(s)' : (($unit === 'days') ? 'day(s)' : $unit);
+                echo '<input type="text" value="' . $original_duration . ' ' . $displayUnit . '" readonly>';
+                echo '</div>';
+
+                echo '<div class="field-group">';
+                echo '<label>Intake Time</label>';
+                echo '<input type="datetime-local" name="IntakeTime" value="' . $original_intake_time . '" data-original-value="' . $original_intake_time . '" readonly>';
                 echo '</div>';
 
                 echo '<div class="field-group">';
@@ -134,7 +171,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     margin-bottom: 1rem;
     padding: 1rem;
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
     gap: 1rem;
     align-items: center;
   }
@@ -188,6 +225,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       border-radius: 8px;
       margin-bottom: 1.5rem;
       text-align: center;
+  }
+
+  .field-group input[readonly] {
+      background-color: #e9ecef;
+      cursor: not-allowed;
   }
 </style>
 

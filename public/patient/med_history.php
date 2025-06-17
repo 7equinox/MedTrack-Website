@@ -19,7 +19,18 @@ require_once '../../config/database.php'; // Your DB connection
 $takenMeds = [];
 
 // ✅ Fetch only "Taken" medications for the logged-in patient
-$medStmt = $conn->prepare("SELECT MedicationName, Dosage, IntakeTime FROM medicationschedule WHERE PatientID = ? AND Status = 'Taken'");
+$medStmt = $conn->prepare("
+    SELECT 
+        m.*,
+        ROW_NUMBER() OVER (PARTITION BY m.PrescriptionGUID ORDER BY m.IntakeTime ASC) as DoseNumber,
+        (m.Frequency * (CASE WHEN m.DurationUnit = 'weeks' THEN m.Duration * 7 ELSE m.Duration END)) as TotalDoses
+    FROM 
+        medicationschedule m
+    WHERE 
+        m.PatientID = ? AND m.Status = 'Taken'
+    ORDER BY 
+        m.IntakeTime DESC
+");
 if (!$medStmt) {
     die("Prepare failed: " . $conn->error);
 }
@@ -48,8 +59,12 @@ $medStmt->close();
     <?php if (count($takenMeds) > 0): ?>
       <?php foreach ($takenMeds as $row): ?>
         <div class="card">
-          <h2><?= htmlspecialchars($row['MedicationName']) ?> | <?= date("h:i A", strtotime($row['IntakeTime'])) ?></h2>
-          <p><?= htmlspecialchars($row['Dosage']) ?> | Taken</p>
+          <h2><?= htmlspecialchars($row['MedicationName']) ?></h2>
+          <p><?= htmlspecialchars($row['Dosage']) ?> | For: <?= htmlspecialchars($row['MedicationFor']) ?></p>
+          <p style="font-size: 0.9rem; color: #555;">
+              Dose <?= htmlspecialchars($row['DoseNumber']) ?> of <?= htmlspecialchars($row['TotalDoses']) ?> &bull; 
+              Taken on: <?= date("M d, Y, h:i A", strtotime($row['IntakeTime'])) ?>
+          </p>
         </div>
       <?php endforeach; ?>
     <?php else: ?>

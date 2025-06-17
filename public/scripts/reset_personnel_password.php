@@ -19,12 +19,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $message = "Personnel ID and new password cannot be empty.";
         $message_type = 'error';
     } else {
-        // Hash the new password securely
-        $hashedPassword = password_hash($newPassword, PASSWORD_DEFAULT);
+        $isAlreadyHashed = isset($_POST['is_hashed']);
+
+        // If the input is not already a hash, hash it securely.
+        // Otherwise, use the provided value as is.
+        $passwordToStore = $isAlreadyHashed ? $newPassword : password_hash($newPassword, PASSWORD_DEFAULT);
 
         // Update the password in the database
-        $stmt = $conn->prepare("UPDATE personnel SET Password = ? WHERE PersonneIID = ?");
-        $stmt->bind_param("ss", $hashedPassword, $personnelID);
+        $stmt = $conn->prepare("UPDATE personnel SET Password = ? WHERE PersonnelID = ?");
+        $stmt->bind_param("ss", $passwordToStore, $personnelID);
 
         if ($stmt->execute()) {
             if ($stmt->affected_rows > 0) {
@@ -79,11 +82,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <form method="POST" action="">
             <div class="form-group">
                 <label for="personnel_id">Personnel ID</label>
-                <input type="text" id="personnel_id" name="personnel_id" required placeholder="e.g., MD-0001">
+                <input type="text" id="personnel_id" name="personnel_id" required placeholder="e.g., MP-0001">
             </div>
             <div class="form-group">
-                <label for="new_password">New Password</label>
+                <label for="new_password">New Password (or Hash)</label>
                 <input type="password" id="new_password" name="new_password" required>
+            </div>
+            <div class="form-group" style="display: flex; align-items: center; gap: 10px;">
+                <input type="checkbox" id="is_hashed" name="is_hashed" value="1" style="width: auto;">
+                <label for="is_hashed" style="margin-bottom: 0; font-weight: normal;">The value provided is already a hash</label>
             </div>
             <button type="submit">Reset Password</button>
         </form>

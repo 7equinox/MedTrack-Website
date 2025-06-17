@@ -22,7 +22,18 @@ $patientStmt->execute();
 $patient = $patientStmt->get_result()->fetch_assoc();
 
 // Get all medication schedules
-$medStmt = $conn->prepare("SELECT * FROM medicationschedule WHERE PatientID = ? ORDER BY IntakeTime ASC");
+$medStmt = $conn->prepare("
+    SELECT 
+        m.*,
+        ROW_NUMBER() OVER (PARTITION BY m.PrescriptionGUID ORDER BY m.IntakeTime ASC) as DoseNumber,
+        (m.Frequency * (CASE WHEN m.DurationUnit = 'weeks' THEN m.Duration * 7 ELSE m.Duration END)) as TotalDoses
+    FROM 
+        medicationschedule m
+    WHERE 
+        m.PatientID = ?
+    ORDER BY 
+        m.IntakeTime ASC
+");
 $medStmt->bind_param("s", $patientID);
 $medStmt->execute();
 $allMedications = $medStmt->get_result();
@@ -55,7 +66,11 @@ require_once '../../templates/partials/header.php';
   <!-- Reminder Popup -->
   <?php if ($firstReminder): ?>
     <div class="reminder-popup" id="reminderPopup">
-      <p>Reminder: <?= htmlspecialchars($firstReminder['MedicationName']) ?> at <?= htmlspecialchars(date('Y-m-d h:i A', strtotime($firstReminder['IntakeTime']))) ?></p>
+      <p>
+        Reminder: <?= htmlspecialchars($firstReminder['MedicationName']) ?> 
+        (Dose <?= htmlspecialchars($firstReminder['DoseNumber']) ?> of <?= htmlspecialchars($firstReminder['TotalDoses']) ?>) 
+        at <?= htmlspecialchars(date('Y-m-d h:i A', strtotime($firstReminder['IntakeTime']))) ?>
+      </p>
       <span class="close-btn" id="closePopup">✖</span>
     </div>
   <?php endif; ?>
@@ -72,6 +87,10 @@ require_once '../../templates/partials/header.php';
           <tr>
             <th>Medication</th>
             <th>Dosage</th>
+            <th>For</th>
+            <th>Frequency</th>
+            <th>Duration</th>
+            <th>Dose No.</th>
             <th>Intake Time</th>
             <th>Status</th>
           </tr>
@@ -82,12 +101,22 @@ require_once '../../templates/partials/header.php';
               <tr>
                 <td><?= htmlspecialchars($med['MedicationName']) ?></td>
                 <td><?= htmlspecialchars($med['Dosage']) ?></td>
+                <td><?= htmlspecialchars($med['MedicationFor']) ?></td>
+                <td><?= htmlspecialchars($med['Frequency'] ?? 'N/A') ?>x per day</td>
+                <td>
+                    <?php
+                        $unit = htmlspecialchars($med['DurationUnit'] ?? '');
+                        $displayUnit = ($unit === 'weeks') ? 'week(s)' : (($unit === 'days') ? 'day(s)' : $unit);
+                        echo (htmlspecialchars($med['Duration'] ?? 'N/A') . ' ' . $displayUnit);
+                    ?>
+                </td>
+                <td><?= htmlspecialchars($med['DoseNumber']) ?> / <?= htmlspecialchars($med['TotalDoses']) ?></td>
                 <td><?= htmlspecialchars(date('Y-m-d h:i A', strtotime($med['IntakeTime']))) ?></td>
                 <td><?= htmlspecialchars($med['Status']) ?></td>
               </tr>
             <?php endforeach; ?>
           <?php else: ?>
-            <tr><td colspan="4" class="text-center">No upcoming medications.</td></tr>
+            <tr><td colspan="8" class="text-center">No upcoming medications.</td></tr>
           <?php endif; ?>
         </tbody>
       </table>

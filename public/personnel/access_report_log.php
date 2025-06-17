@@ -35,11 +35,40 @@ if (!$report) {
 // Handle update
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['status'])) {
     $newStatus = $_POST['status'];
-    $updateStmt = $conn->prepare("UPDATE reports SET ReportStatus = ? WHERE ReportID = ?");
-    $updateStmt->bind_param("si", $newStatus, $reportID);
-    $updateStmt->execute();
-    header("Location: access_report_log.php?report=" . $reportID . "&update_success=1");
-    exit();
+    
+    $conn->begin_transaction();
+
+    try {
+        $updateStmt = $conn->prepare("UPDATE reports SET ReportStatus = ? WHERE ReportID = ?");
+        $updateStmt->bind_param("si", $newStatus, $reportID);
+        $updateStmt->execute();
+        $updateStmt->close();
+
+        if ($newStatus === 'Resolved') {
+            $getScheduleID = $conn->prepare("SELECT ScheduleID FROM reports WHERE ReportID = ?");
+            $getScheduleID->bind_param("i", $reportID);
+            $getScheduleID->execute();
+            $result = $getScheduleID->get_result();
+            $reportData = $result->fetch_assoc();
+            $getScheduleID->close();
+
+            if ($reportData && !empty($reportData['ScheduleID'])) {
+                $scheduleID = $reportData['ScheduleID'];
+                $updateMed = $conn->prepare("UPDATE medicationschedule SET Status = 'Taken' WHERE ScheduleID = ? AND Status = 'Missed'");
+                $updateMed->bind_param("i", $scheduleID);
+                $updateMed->execute();
+                $updateMed->close();
+            }
+        }
+        
+        $conn->commit();
+        
+        header("Location: access_report_log.php?report=" . $reportID . "&update_success=1");
+        exit();
+    } catch (mysqli_sql_exception $exception) {
+        $conn->rollback();
+        die("Update failed: " . $exception->getMessage());
+    }
 }
 
 require_once __DIR__ . '/../../templates/partials/personnel_header.php';
